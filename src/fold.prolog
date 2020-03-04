@@ -3,6 +3,11 @@
 :- use_module(functor).
 
 :- meta_predicate fold(?, 3, ?, ?, ?).
+/**
+ * fold(+FoldableType, :Predicate, +Zero, +Foldable, ?Fold) is nondet
+ * 
+ * Folds Foldable using Predicate, with initial accumulator value Zero.
+ */
 fold(F1/F2, P, D, F, R) :-
     map(F1, fold(F2, P, D), F, FR),
     fold(F1, P, D, FR, R).

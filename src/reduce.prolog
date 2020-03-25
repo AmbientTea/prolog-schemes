@@ -12,28 +12,35 @@ rebalance_path(A / B, A / B) :-
 rebalance_path(A, A) :-
     A \= _ / _.
 
-reduce_fill_path(F1 / F2, F1 / NP, T) :- 
-    F1 =.. [_, T],
-    reduce_fill_path(F2, NP, _).
+reduce_fill_path(FT1 / FT2, NFT1 / NFT2, T) :-
+    atom(FT1) ->
+        NFT1 =.. [FT1, T], 
+        reduce_fill_path(FT2, NFT2, T)
+    ; segment_type(FT1, T) ->
+        NFT1 = FT1,
+        reduce_fill_path(FT2, NFT2, _).
 
-reduce_fill_path(F1 / F2, NF1 / NP, T) :-
-    atom(F1),
-    reduce_fill_path(F2, NP, T),
-    NF1 =.. [F1, T].
+reduce_fill_path(FT, FT, T) :-
+    FT \= _ / _,
+    segment_type(FT, T).
 
-reduce_fill_path(P, P, T) :-
-    dif(P, _ / _),
-    P =.. [_, T].
+segment_type(F, T) :- F =.. [_, T].
+segment_type(functor(_, _, _ / T), T).
 
 
 inner_reduce(FT1 / FT2, F, R) :-
-    map(FT2, inner_reduce(FT2), F, FR),
+    map(FT1, inner_reduce(FT2), F, FR),
     inner_reduce(FT1, FR, R).
 
 inner_reduce(FT, F, R) :-
     FT =.. [_,T],
     empty(T, E),
     fold(FT, combine(T), E, F, R).
+
+inner_reduce(functor(F, Arity, Field / _), Fun, V) :-
+    functor(Fun, F, Arity),
+    Fun =.. [F | Args],
+    nth1(Field, Args, V).
 
 reduce(FT, F, R) :-
     rebalance_path(FT, FT2),

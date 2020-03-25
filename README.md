@@ -79,7 +79,7 @@ Empty = (0, 1, []).
 
 # More Examples
 
-## Easy data aggregations
+## Easy data aggregation
 ```prolog
 sum_max_min(List, Sum, Max, Min) :-
     Type = list((int(+), int(max), int(min)))
@@ -90,4 +90,17 @@ sum_max_min(List, Sum, Max, Min) :-
     Sum = 27,
     Max = 8,
     Min = 3.
+```
+
+Assume we have a database of contracts and we want to calculate a sum of their value.
+We can take advantage of the fact that a functor can be reduced to one of its field:
+```prolog
+:- Employees = [
+        employee(keanu, reeves, 100),
+        employee(dwayne, johnson, 90),
+        employee(justin, bieber, 1)
+    ],
+    EmployeeSalaries = list / functor(employee, 3, 3/int(+)),
+    reduce(EmployeeSalaries, Employees, Sum).
+Sum = 191.
 ```

@@ -18,5 +18,4 @@ empty(functor(F, Arity, Field / FT), E) :-
     empty(FT, FE),
     nth1(Field, Args, FE),
     length(Args, Arity), % force finite list
-    print( E =.. [F | Args] ),
     E =.. [F | Args].

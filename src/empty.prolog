@@ -7,6 +7,7 @@ empty(int(max), -inf).
 empty(int(min), inf).
 
 empty(list(_), []).
+empty(list, []).
 
 empty(','(T1,T2), (E1,E2)) :-
     empty(T1, E1),

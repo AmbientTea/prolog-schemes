@@ -11,8 +11,9 @@ generic and reusable. In Haskell and Scala this is achieved using type classes.
 This library attempts to translate some of these languages' goodies to Prolog,
 while taking into consideration its own strengths and conventions.
 
-This docuent talks about *type classes* and *types* in a loose way to refer to
-these translations. A more correct way would probably to talk about
+This docuent still talks about *type classes* and *types* in a loose way to refer to
+these translations even in absence of a real type system. 
+A more correct way would probably to talk about
 *operations* (`map` as opposed to `Functor`)
 and *algebraic structures* (`(Int, +) group` as opposed to `Int`).
 
@@ -22,7 +23,6 @@ The library is not yet packaged and the only way to install it is to
 clone this repo and copy the contents to your library path.
 
 # General structure
-
 Every predicate exported by the library expects its first argument to be
 a sufficiently grounded term describing the algebraic structure that it
 should use to interpret the rest of the arguments. Eg.
@@ -30,7 +30,7 @@ should use to interpret the rest of the arguments. Eg.
 :- combine(int(+), 1, 2, Sum).
 Sum = 3.
 ```
-Will apply to its arguments the operation (`plus`) from the group of integers with addition.
+Will apply to its arguments the operation (`plus`) of the group of `integers with addition`.
 
 The predicates expect this type argument to be grounded only as much as needed:
 ```prolog 
@@ -43,7 +43,9 @@ Some shorthands are also provided:
 List = [1, 2]
 ```
 
-# Nested Types
+# Complex Types
+
+## Nesting
 
 Very often data we work with is not just a simple list. That is why the library provides
 the operator `/` for composing multiple instances of the same 'type class'. For example:
@@ -67,10 +69,17 @@ Shorthands are allowed in special cases:
 Result = 6 ;
 ```
 
+## Tuples
+
+Some operations can be derived for tuples based on the operations of their contents:
+```prolog 
+:- empty((int(+), int(*), list), Empty).
+Empty = (0, 1, []).
+```
+
 # More Examples
 
 ## Easy data aggregations
-
 ```prolog
 sum_max_min(List, Sum, Max, Min) :-
     Type = list((int(+), int(max), int(min)))

@@ -4,8 +4,8 @@
 
 combine(int(+), A, B, C) :- C #= A+B.
 combine(int(*), A, B, C) :- C #= A*B.
-combine(int(min), A, B, C) :- C #= min(A,B).
-combine(int(max), A, B, C) :- C #= max(A,B).
+combine(int(min), A, B, C) :- when(( nonvar(A), nonvar(B) ), C is min(A,B)).
+combine(int(max), A, B, C) :- when(( nonvar(A), nonvar(B) ), C is max(A,B)).
 
 combine(list(_), A, B, C) :- append(A,B,C).
 

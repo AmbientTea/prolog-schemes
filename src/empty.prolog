@@ -3,8 +3,8 @@
  
 empty(int(+), 0).
 empty(int(*), 1).
-empty(int(max), inf).
-empty(int(min), -inf).
+empty(int(max), -inf).
+empty(int(min), inf).
 
 empty(list(_), []).
 

@@ -1,6 +1,7 @@
 :- module(reduce, [reduce/3]) .
 
-:- use_module(monoid).
+:- use_module(semigroup).
+:- use_module(empty).
 :- use_module(fold).
 :- use_module(functor).
 

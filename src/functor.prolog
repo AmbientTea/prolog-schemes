@@ -13,3 +13,11 @@ map(functor(Field), Pred, A, B) :-
     call(Pred, Arg, NewArg),
     nth1(Field, NewArgs, NewArg, Rest),
     B =.. [F | NewArgs].
+
+map(functor(Field / FT), Pred, A, B) :-
+    map(functor(Field), map(FT, Pred), A, B).
+
+map(functor([]), _, A, A).
+map(functor([Field | Fields]), Pred, A, C) :-
+    map(functor(Field), Pred, A, B),
+    map(functor(Fields), Pred, B, C).

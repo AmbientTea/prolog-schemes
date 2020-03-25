@@ -12,3 +12,11 @@ empty(list, []).
 empty(','(T1,T2), (E1,E2)) :-
     empty(T1, E1),
     empty(T2, E2).
+
+empty(functor(F, Arity, Field / FT), E) :-
+    integer(Field),
+    empty(FT, FE),
+    nth1(Field, Args, FE),
+    length(Args, Arity), % force finite list
+    print( E =.. [F | Args] ),
+    E =.. [F | Args].

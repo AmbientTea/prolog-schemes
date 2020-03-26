@@ -167,3 +167,10 @@ This is enough to make the same type work for both operations.
 `*` Arity 1 only
 
 `**` Arity 1 only
+
+# Mentions
+
+This project takes a lot of inspiration from Scala projects:
+[Cats](https://github.com/typelevel/cats),
+[Monocle](https://github.com/julien-truffaut/Monocle) and
+[Algebird](https://github.com/twitter/algebird).

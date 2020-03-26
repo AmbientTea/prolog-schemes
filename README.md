@@ -1,7 +1,3 @@
-# prolog-explicit
-
-Explicitly typed polymorphic predicate library
-
 # Rationale
 
 Type safety is not the only benefit a type system can bring to a language.
@@ -12,8 +8,8 @@ generic and reusable. In Haskell and Scala this is achieved using type classes.
 This library attempts to translate some of these languages' goodies to Prolog,
 while taking into consideration its own strengths and conventions.
 
-This docuent still talks about _type classes_ and _types_ in a loose way to refer to
-these translations even in absence of a real type system.
+This document still talks about _type classes_ and _types_ in a loose way
+to refer to these constructs even in absence of a real type system.
 A more correct way would probably to talk about
 _operations_ (`map` as opposed to `Functor`)
 and _algebraic structures_ (`(Int, +) group` as opposed to `Int`).
@@ -27,14 +23,14 @@ clone this repo and copy the contents to your library path.
 
 Every predicate exported by the library expects its first argument to be
 a sufficiently grounded term describing the algebraic structure that it
-should use to interpret the rest of the arguments. Eg.
+should use to interpret the rest of the arguments. Eg.:
 
 ```prolog
 :- combine(int(+), 1, 2, Sum).
 Sum = 3.
 ```
 
-Will apply to its arguments the operation (`plus`) of the group of `integers with addition`.
+will apply to its arguments the operation (`plus`) of the group of `integers with addition`.
 
 The predicates expect this type argument to be grounded only as much as needed:
 
@@ -62,7 +58,7 @@ the operator `/` for composing multiple instances of the same 'type class'. For 
 List = [[2, 3], [4]].
 ```
 
-Someties an operation can be nested in a couple different ways and this can be reflected
+Sometimes an operation can be nested in a couple different ways and this can be reflected
 in the type:
 
 ```prolog
@@ -92,6 +88,8 @@ Empty = (0, 1, []).
 
 ## Easy data aggregation
 
+We can make use of various `combine` operations for integers to compute simple
+statistics for a given list of values:
 ```prolog
 sum_max_min(List, Sum, Max, Min) :-
     Type = list((int(+), int(max), int(min)))
@@ -103,11 +101,15 @@ sum_max_min(List, Sum, Max, Min) :-
     Max = 8,
     Min = 3.
 ```
+Notice that since our 'types' are purely declarative, we can interpret the same value in terms
+of different algebraic structures: groups with sum, max and min. This does not require any
+boxing of the values, like the Twitter's algebird
+[Min and Max](https://twitter.github.io/algebird/datatypes/min_and_max.html) do.
 
 ## Optics and type reuse
 
 Assume we have a database of employee contracts and we want to calculate
-sthe sum of the salaries.
+the sum of the salaries.
 We can take advantage of the fact that a functor can be reduced to one of its field:
 
 ```prolog
@@ -116,6 +118,7 @@ We can take advantage of the fact that a functor can be reduced to one of its fi
         employee(dwayne, johnson, 90),
         employee(justin, bieber, 1)
     ],
+    % list of functors of arity 3, symbol `employee`, with an int in 3rd position
     EmployeeSalaries = list / functor(employee, 3, 3/int(+)),
     reduce(EmployeeSalaries, Employees, Sum).
 Sum = 191.
@@ -131,8 +134,7 @@ EmployeesAfterRaise = [employee(keanu, reeves, 110), employee(dwayne, johnson, 1
 
 It's easy to see there is not much difference between the types used in these two examples.
 The only difference is that in the second one we omit the field type as there is no
-functor instance for ints. In cases like these we can use the `id` functor to make an
-arbitrary type behave like one:
+`map` operation for ints. In cases like these we can use the `id` type to use a trivial one:
 
 ```prolog
 :- Employees = [

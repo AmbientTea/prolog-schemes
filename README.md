@@ -92,7 +92,9 @@ sum_max_min(List, Sum, Max, Min) :-
     Min = 3.
 ```
 
-Assume we have a database of contracts and we want to calculate a sum of their value.
+## Optics and type reuse
+Assume we have a database of employee contracts and we want to calculate
+sthe sum of the salaries.
 We can take advantage of the fact that a functor can be reduced to one of its field:
 ```prolog
 :- Employees = [
@@ -104,3 +106,28 @@ We can take advantage of the fact that a functor can be reduced to one of its fi
     reduce(EmployeeSalaries, Employees, Sum).
 Sum = 191.
 ```
+
+Now let's say we decide to give everyone a raise:
+```prolog
+:- EmployeeSalaries = list / functor(employee, 3, 3),
+   map(EmployeeSalaries, plus(10), Employees, EmployeesAfterRaise).
+EmployeesAfterRaise = [employee(keanu, reeves, 110), employee(dwayne, johnson, 100), employee(justin, bieber, 11)]
+```
+
+It's easy to see there is not much difference between the types used in these two examples.
+The only difference is that in the second one we omit the field type as there is no
+functor instance for ints. In cases like these we can use the `id` functor to make an
+arbitrary type behave like one:
+```prolog
+:- Employees = [
+        employee(keanu, reeves, 100),
+        employee(dwayne, johnson, 90),
+        employee(justin, bieber, 1)
+    ],
+    EmployeeSalaries = list / functor(employee, 3, 3/id(int(+))),
+    reduce(EmployeeSalaries, Employees, Sum),
+    map(EmployeeSalaries, plus(10), Employees, EmployeesAfterRaise).
+Sum = 191,
+EmployeesAfterRaise = [employee(keanu, reeves, 110), employee(dwayne, johnson, 100), employee(justin, bieber, 11)]
+```
+This is enough to make the same type work for both operations.

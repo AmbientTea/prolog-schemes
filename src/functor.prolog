@@ -6,6 +6,8 @@ map(F1 / F2, Pred, A, B) :- map(F1, map(F2, Pred), A, B).
 map(list(_), Pred, A, B) :- maplist(Pred, A, B).
 map(list, Pred, A, B) :- map(list(_), Pred, A, B).
 
+map(id(_), Pred, A, B) :- call(Pred, A, B).
+
 map(functor(F, Arity, Field), Pred, A, B) :-
     integer(Field), 
     A =.. [F | Args],

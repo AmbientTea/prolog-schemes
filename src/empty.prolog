@@ -9,6 +9,8 @@ empty(int(min), inf).
 empty(list(_), []).
 empty(list, []).
 
+empty(id(T), E) :- empty(T, E).
+
 empty(','(T1,T2), (E1,E2)) :-
     empty(T1, E1),
     empty(T2, E2).

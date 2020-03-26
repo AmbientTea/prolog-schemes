@@ -75,6 +75,11 @@ Shorthands are allowed in special cases:
 Result = 6 ;
 ```
 
+A nice feature that comes with this syntax is that where a Scala type `List[List[Int]]`
+can be ambiguously interpreted as a functor, in Prolog we can differentate between
+* `list / list(int(+))` for a functor `List[List[_]]`
+* `list(list(int(+)))` for a functor `List[_]`.
+
 ## Tuples
 
 Some operations can be derived for tuples based on the operations of their contents:

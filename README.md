@@ -167,7 +167,6 @@ This is enough to make the same type work for both operations.
 | `list(_)`  |   x   |     x     |    x    |  x   |   x    |
 | `tuple`    |   x   |     x     |         |      |        |
 | `functor`  |  `*`  |           |    x    |      |  `**`  |
-| `dfsd`     |       |           |         |      |        |
 
 `*` Arity 1 only
 

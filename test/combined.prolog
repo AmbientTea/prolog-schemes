@@ -1,4 +1,4 @@
-:- use_module('..'/src/semigroup).
+:- use_module('..'/src/combined).
 
 random_ints(X, Y) :- 
     random_between(-1000, 1000, X),
@@ -10,38 +10,38 @@ random_list(List) :-
 
 repeat(Times) :- between(1, Times, _).
 
-:- begin_tests('int semigroup tests').
+:- begin_tests('int combined tests').
 
 
 test('int + test', [
     forall(( repeat(10), random_ints(X, Y), Sum is X + Y )),
     true(Result =@= Sum)
 ]) :-
-    combine(int(+), X, Y, Result).
+    combined(int(+), X, Y, Result).
 
 
 test('int * test', [
     forall(( repeat(10), random_ints(X, Y), Product is X * Y )),
     true(Result =@= Product)
 ]) :-
-    combine(int(*), X, Y, Result).
+    combined(int(*), X, Y, Result).
 
 
 test('int max test', [
     forall(( repeat(10), random_ints(X, Y), Max is max(X, Y) )),
     true(Result =@= Max)
 ]) :-
-    combine(int(max), X, Y, Result).
+    combined(int(max), X, Y, Result).
 
 test('int min test', [
     forall(( repeat(10), random_ints(X, Y), Min is min(X, Y) )),
     true(Result =@= Min)
 ]) :-
-    combine(int(min), X, Y, Result).
+    combined(int(min), X, Y, Result).
 
-:- end_tests('int semigroup tests').
+:- end_tests('int combined tests').
 
-:- begin_tests('list semigroup tests').
+:- begin_tests('list combined tests').
 
 test('random lists test', [
     forall((
@@ -52,23 +52,23 @@ test('random lists test', [
     )),
     true(Result =@= List)
 ]) :-
-    combine(list, List1, List2, Result).
+    combined(list, List1, List2, Result).
 
 test('empty list test - left', [
     forall((repeat(10), random_list(List))),
     true(Result =@= List)
 ]) :-
-    combine(list(int(+)), List, [], Result).
+    combined(list(int(+)), List, [], Result).
 
 test('empty list test - right', [
     forall((repeat(10), random_list(List))),
     true(Result =@= List)
 ]) :-
-    combine(list(int(+)), [], List, Result).
+    combined(list(int(+)), [], List, Result).
 
-:- end_tests('list semigroup tests').
+:- end_tests('list combined tests').
 
-:- begin_tests('tuple semigroup tests').
+:- begin_tests('tuple combined tests').
 
 test('pair test', [ 
     forall((
@@ -80,7 +80,7 @@ test('pair test', [
         )),
     true(Result =@= (Sum, Product))
 ]) :-
-    combine((int(+), int(*)), (X1, Y1), (X2, Y2), Result).
+    combined((int(+), int(*)), (X1, Y1), (X2, Y2), Result).
 
 test('triple test', [ 
     forall((
@@ -94,6 +94,6 @@ test('triple test', [
         )),
     true(Result =@= (Sum, Product, Max))
 ]) :-
-    combine((int(+), int(*), int(max)), (X1, Y1, Z1), (X2, Y2, Z2), Result).
+    combined((int(+), int(*), int(max)), (X1, Y1, Z1), (X2, Y2, Z2), Result).
 
-:- end_tests('tuple semigroup tests').
+:- end_tests('tuple combined tests').

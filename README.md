@@ -11,7 +11,7 @@ while taking into consideration its own strengths and conventions.
 This document still talks about _type classes_ and _types_ in a loose way
 to refer to these constructs even in absence of a real type system.
 A more correct way would probably to talk about
-_operations_ (`map` as opposed to `Functor`)
+_operations_ (`mapped` as opposed to `Functor`)
 and _algebraic structures_ (`(Int, +) group` as opposed to `Int`).
 
 # Instalation
@@ -54,7 +54,7 @@ Very often data we work with is not just a simple list. That is why the library 
 the operator `/` for composing multiple instances of the same 'type class'. For example:
 
 ```prolog
-:- functor:map(list / list(_), plus(1), [[1,2],[3]], List).
+:- mapped(list / list(_), plus(1), [[1,2],[3]], List).
 List = [[2, 3], [4]].
 ```
 
@@ -77,8 +77,9 @@ Result = 6 ;
 
 A nice feature that comes with this syntax is that where a Scala type `List[List[Int]]`
 can be ambiguously interpreted as a functor, in Prolog we can differentate between
-* `list / list(int(+))` for a functor `List[List[_]]`
-* `list(list(int(+)))` for a functor `List[_]`.
+
+- `list / list(int(+))` for a functor `List[List[_]]`
+- `list(list(int(+)))` for a functor `List[_]`.
 
 ## Tuples
 
@@ -95,10 +96,11 @@ Empty = (0, 1, []).
 
 We can make use of various `combine` operations for integers to compute simple
 statistics for a given list of values:
+
 ```prolog
 sum_max_min(List, Sum, Max, Min) :-
     Type = list((int(+), int(max), int(min)))
-    functor:map(Type, [X, (X,X,X)]>>true, List, InterList),
+    mapped(Type, [X, (X,X,X)]>>true, List, InterList),
     reduce:reduce(Type, InterList, (Sum, Max, Min)).
 
 :- List = [3,6,8,3,7], sum_max_min(List, Sum, Max, Min).
@@ -106,6 +108,7 @@ sum_max_min(List, Sum, Max, Min) :-
     Max = 8,
     Min = 3.
 ```
+
 Notice that since our 'types' are purely declarative, we can interpret the same value in terms
 of different algebraic structures: groups with sum, max and min. This does not require any
 boxing of the values, like the Twitter's algebird
@@ -133,13 +136,13 @@ Now let's say we decide to give everyone a raise:
 
 ```prolog
 :- EmployeeSalaries = list / functor(employee, 3, 3),
-   map(EmployeeSalaries, plus(10), Employees, EmployeesAfterRaise).
+   mapped(EmployeeSalaries, plus(10), Employees, EmployeesAfterRaise).
 EmployeesAfterRaise = [employee(keanu, reeves, 110), employee(dwayne, johnson, 100), employee(justin, bieber, 11)]
 ```
 
 It's easy to see there is not much difference between the types used in these two examples.
 The only difference is that in the second one we omit the field type as there is no
-`map` operation for ints. In cases like these we can use the `id` type to use a trivial one:
+`mapped` operation for ints. In cases like these we can use the `id` type to use a trivial one:
 
 ```prolog
 :- Employees = [
@@ -149,7 +152,7 @@ The only difference is that in the second one we omit the field type as there is
     ],
     EmployeeSalaries = list / functor(employee, 3, 3/id(int(+))),
     reduce(EmployeeSalaries, Employees, Sum),
-    map(EmployeeSalaries, plus(10), Employees, EmployeesAfterRaise).
+    mapped(EmployeeSalaries, plus(10), Employees, EmployeesAfterRaise).
 Sum = 191,
 EmployeesAfterRaise = [employee(keanu, reeves, 110), employee(dwayne, johnson, 100), employee(justin, bieber, 11)]
 ```
@@ -158,15 +161,15 @@ This is enough to make the same type work for both operations.
 
 # Instance table
 
-|            | empty | semigroup | functor | fold | reduce |
-| ---------- | :---: | :-------: | :-----: | :--: | :----: |
-| composable |  no   |    no     |   yes   | yes  |  yes   |
-| ---------  | :---: | :-------: | :-----: | :--: | :----: |
-| `id(_)`    |   x   |     x     |    x    |      |   x    |
-| `int(_)`   |   x   |     x     |         |      |        |
-| `list(_)`  |   x   |     x     |    x    |  x   |   x    |
-| `tuple`    |   x   |     x     |         |      |        |
-| `functor`  |  `*`  |           |    x    |      |  `**`  |
+|            | empty | combined  | mapped  | folded | reduced |
+| ---------- | :---: | :-------: | :-----: | :----: | :-----: |
+| composable |  no   |    no     |   yes   |  yes   |   yes   |
+| ---------  | :---: | :-------: | :-----: |  :--:  | :----:  |
+| `id(_)`    |   x   |     x     |    x    |        |    x    |
+| `int(_)`   |   x   |     x     |         |        |         |
+| `list(_)`  |   x   |     x     |    x    |   x    |    x    |
+| `tuple`    |   x   |     x     |         |        |         |
+| `functor`  |  `*`  |           |    x    |        |  `**`   |
 
 `*` Arity 1 only
 

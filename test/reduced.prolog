@@ -1,8 +1,8 @@
-:- begin_tests('reduce tests').
+:- begin_tests('reduced tests').
 
-:- use_module('..'/src/reduce).
+:- use_module('..'/src/reduced).
 
-test('flat list reduce', [
+test('flat list reduced', [
     forall(( 
         between(0, 10, Length), 
         randseq(Length, Length, List),
@@ -10,9 +10,9 @@ test('flat list reduce', [
     )),
     true(Sum =@= ExpectedSum)
 ]) :- 
-        reduce(list(int(+)), List, Sum).
+        reduced(list(int(+)), List, Sum).
 
-test('nested list reduce', [
+test('nested list reduced', [
     nondet,
     forall(( 
         between(0, 10, Length), 
@@ -22,9 +22,9 @@ test('nested list reduce', [
     )),
     true(Product =@= ExpectedProduct)
 ]) :-
-    reduce(list / list(int(+)), [List1, List2], Product).
+    reduced(list / list(int(+)), [List1, List2], Product).
 
-test('nested list mixed reduce', [
+test('nested list mixed reduced', [
     nondet,
     forall(( 
         between(0, 10, Length), 
@@ -37,6 +37,6 @@ test('nested list mixed reduce', [
     )),
     true(Product =@= ExpectedProduct)
 ]) :-
-    reduce(list(int(*)) / list(int(+)), [List1, List2], Product).
+    reduced(list(int(*)) / list(int(+)), [List1, List2], Product).
 
-:- end_tests('reduce tests').
+:- end_tests('reduced tests').

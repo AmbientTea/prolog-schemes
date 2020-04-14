@@ -1,9 +1,9 @@
-:- begin_tests('fold test').
+:- begin_tests('folded test').
 
-:- use_module('..'/src/fold).
+:- use_module('..'/src/folded).
 
 
-test('plain list fold', [
+test('plain list folded', [
     forall((
         between(1, 10, Length),
         randseq(Length, Length, List),
@@ -11,10 +11,10 @@ test('plain list fold', [
     )),
     true(ExpectedSum=@=Sum)
 ]) :-
-    fold(list, plus, 0, List, Sum).
+    folded(list, plus, 0, List, Sum).
 
 
-test('nested list fold', [
+test('nested list folded', [
     forall((
         randseq(9, 10, List),
         append(List1, List2, List),
@@ -22,6 +22,6 @@ test('nested list fold', [
     )),
     true(ExpectedSum=@=Sum)
 ]) :-
-    fold(list / list(int(_)), plus, 0, [List1, List2], Sum).
+    folded(list / list(int(_)), plus, 0, [List1, List2], Sum).
 
-:- end_tests('fold test').
+:- end_tests('folded test').

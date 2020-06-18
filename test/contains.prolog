@@ -22,6 +22,46 @@ test('nested list contains its elements\' elements', [
     set(Elem =@= List)
 ]) :-
     contains:contains(list / list, LList, Elem).
-    
+
+
+test('single field functor', [
+    setup((
+        Term = f(first, second, third),
+        Type = functor(F, Arity, 2)
+        )),
+    nondet,
+    true(F - Arity - Elem =@= f - 3 - second)
+]) :-
+    contains:contains(Type, Term, Elem).
+
+test('multi-field functor', [
+    setup((
+        Term = f(first, second, third),
+        Type = functor(_F, _Arity, [1,2])
+        )),
+    nondet,
+    set(Elem =@= [first, second])
+]) :-
+    contains:contains(Type, Term, Elem).
+
+test('nested multi-field functor', [
+    setup((
+        Term = f(first, [second], third),
+        Type = functor(_F, _Arity, [1/id, 2/list])
+        )),
+    nondet,
+    set(Elem =@= [first, second])
+]) :-
+    contains:contains(Type, Term, Elem).
+
+test('nested multi-field functor', [
+    setup((
+        Term = f(first, [second], third),
+        Type = functor(_F, _Arity, 2/list)
+        )),
+    nondet,
+    set(Elem =@= [second])
+]) :-
+    contains:contains(Type, Term, Elem).
 
 :- end_tests('contains tests').

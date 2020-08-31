@@ -68,6 +68,15 @@ test('empty list test - right', [
 
 :- end_tests('list combined tests').
 
+:- begin_tests('nested list test').
+
+test('list of ints *', [ 
+    true(Result =@= [2,6,12])
+]) :-
+    combined(list / int(*), [1,2,3], [2,3,4], Result).
+
+:- end_tests('nested list test').
+
 :- begin_tests('tuple combined tests').
 
 test('pair test', [ 

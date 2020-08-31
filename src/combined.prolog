@@ -9,6 +9,7 @@ combined(int(max), A, B, C) :- when(( nonvar(A), nonvar(B) ), C is max(A,B)).
 
 combined(list(_), A, B, C) :- append(A,B,C).
 combined(list, A, B, C) :- combined(list(_), A, B, C).
+combined(list / T, A, B, C) :- maplist(combined(T), A, B, C).
 
 combined(id(T), A, B, C) :- combined(T, A, B, C).
 

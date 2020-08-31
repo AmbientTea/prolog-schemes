@@ -24,6 +24,18 @@ test('nested list reduced', [
 ]) :-
     reduced(list / list(int(+)), [List1, List2], Product).
 
+test('doubly nested list reduced', [
+    nondet,
+    forall(( 
+        between(0, 10, Length), 
+        randseq(Length, Length, List), 
+        sum_list(List, ExpectedProduct),
+        append(List1, List2, List) 
+    )),
+    true(Product =@= ExpectedProduct)
+]) :-
+    reduced(list / list / list(int(+)), [[List1], [List2]], Product).
+
 test('nested list mixed reduced', [
     nondet,
     forall(( 

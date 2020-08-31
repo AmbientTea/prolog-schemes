@@ -22,4 +22,27 @@ test('multi-field functor', [
 ]) :-
     empty(Type, Term).
 
+test('empty dict empty create', [
+    true(D =@= s{})
+]) :-
+    empty(dict(s), D).
+
+test('empty dict empty check', [] ) :-
+    empty(dict(s), s{}).
+
+test('dict empty create', [
+    setup((
+        Fields = [a / int(*), 1 / list, b / int(+)],
+        ExpectedDict = s{a: 1, 1: [], b: 0})),
+    true(D =@= ExpectedDict)
+]) :-
+    empty(dict(s, Fields), D).
+
+test('dict empty check', [
+    setup((
+        Fields = [a / int(*), 1 / list, b / int(+)],
+        MatchingDict = s{a: 1, 1: [], b: 0}))
+]) :-
+    empty(dict(s, Fields), MatchingDict).
+
 :- end_tests('empty tests').

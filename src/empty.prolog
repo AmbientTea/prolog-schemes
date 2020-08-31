@@ -28,3 +28,10 @@ empty(functor(F, Arity, [Field | Fields]), E) :-
 
 empty(functor(F, Arity, []), E) :-
     functor(E, F, Arity).
+
+empty(dict(S), S{}).
+
+empty(dict(S, KeyTypes), D) :-
+    sort(KeyTypes, SortedKeyTypes),
+    maplist([K/T, K-E]>>empty(T,E), SortedKeyTypes, KeyTypePairs),
+    dict_pairs(D, S, KeyTypePairs).

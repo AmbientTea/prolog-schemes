@@ -169,11 +169,9 @@ This is enough to make the same type work for both operations.
 | `int(_)`   |   x   |     x     |         |        |         |
 | `list(_)`  |   x   |     x     |    x    |   x    |    x    |
 | `tuple`    |   x   |     x     |         |        |         |
-| `functor`  |  `*`  |           |    x    |        |  `**`   |
+| `functor`  |   x   |           |    x    |        |   `*`   |
 
 `*` Arity 1 only
-
-`**` Arity 1 only
 
 # Mentions
 

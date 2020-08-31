@@ -21,7 +21,13 @@ contains(functor(F, Arity, [Field | Fields]), Func, Elem) :-
     contains(functor(F, Arity, Field), Func, Elem)
     ; contains(functor(F, Arity, Fields), Func, Elem).
 
-contains(dict(S, [Field / _Type]), Dict, Elem) :-
+contains(dict(S, [Field / Type]), Dict, Elem) :-
+    is_dict(Dict, S),
+    get_dict(Field, Dict, Inner),
+    contains(Type, Inner, Elem).
+
+contains(dict(S, [Field]), Dict, Elem) :-
+    (atom(Field) ; integer(Field)),
     is_dict(Dict, S),
     get_dict(Field, Dict, Elem).
 

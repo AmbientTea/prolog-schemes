@@ -21,6 +21,10 @@ contains(functor(F, Arity, [Field | Fields]), Func, Elem) :-
     contains(functor(F, Arity, Field), Func, Elem)
     ; contains(functor(F, Arity, Fields), Func, Elem).
 
+contains(dict(S, [Field / _Type]), Dict, Elem) :-
+    is_dict(Dict, S),
+    get_dict(Field, Dict, Elem).
+
 contains(F1 / F2, C, E) :-
     contains(F1, C, IC),
     contains(F2, IC, E).

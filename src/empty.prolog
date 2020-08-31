@@ -21,3 +21,10 @@ empty(functor(F, Arity, Field / FT), E) :-
     nth1(Field, Args, FE),
     length(Args, Arity), % force finite list
     E =.. [F | Args].
+
+empty(functor(F, Arity, [Field | Fields]), E) :-
+    empty(functor(F, Arity, Field), E),
+    empty(functor(F, Arity, Fields), E).
+
+empty(functor(F, Arity, []), E) :-
+    functor(E, F, Arity).

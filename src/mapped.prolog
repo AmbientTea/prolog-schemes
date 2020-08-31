@@ -26,3 +26,16 @@ mapped(functor(F, Arity, [Field | Fields]), Pred, A, C) :-
     mapped(functor(F, Arity, Fields), Pred, B, C).
 
 mapped(functor(Fields), Pred, A, B) :- mapped(functor(_, _, Fields), Pred, A, B).
+
+mapped(dict(S, [Field]), Pred, A, B) :-
+    (atom(Field) ; integer(Field)),
+    is_dict(A, S),
+    get_dict(Field, A, Elem),
+    call(Pred, Elem, MElem),
+    put_dict([Field = MElem], A, B).
+
+mapped(dict(S, [Field / Type]), Pred, A, B) :-
+    is_dict(A, S),
+    get_dict(Field, A, Elem),
+    mapped(Type, Pred, Elem, MElem),
+    put_dict([Field = MElem], A, B).

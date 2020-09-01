@@ -1,14 +1,5 @@
 :- use_module('..'/src/combined).
-
-random_ints(X, Y) :- 
-    random_between(-1000, 1000, X),
-    random_between(-1000, 1000, Y).
-
-random_list(List) :-
-        random_between(1, 1000, Len),
-        randseq(Len, Len, List).
-
-repeat(Times) :- between(1, Times, _).
+:- use_module(utils).
 
 :- begin_tests('int combined tests').
 

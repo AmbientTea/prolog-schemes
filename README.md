@@ -170,8 +170,10 @@ This is enough to make the same type work for both operations.
 | `list(_)`  |   x   |     x     |    x    |   x    |    x    |
 | `tuple`    |   x   |     x     |         |        |         |
 | `functor`  |   x   |           |    x    |        |   `*`   |
+| `dict`     |   x   |           |   `**`  |        |         |
 
 `*` Arity 1 only
+`**` Single-field only
 
 # Mentions
 

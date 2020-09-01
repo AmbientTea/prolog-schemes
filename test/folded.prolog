@@ -24,4 +24,14 @@ test('nested list folded', [
 ]) :-
     folded(list / list(int(_)), plus, 0, [List1, List2], Sum).
 
+test('dict folded', [ 
+    setup((
+        Type = dict(s, [field]),
+        Dict = s{ field: 1 },
+        Pred = [A, B, C]>>(C is A + B)
+    )),
+    true(Result =@= 4)
+]) :-
+    folded(Type, Pred, 3, Dict, Result).
+
 :- end_tests('folded test').

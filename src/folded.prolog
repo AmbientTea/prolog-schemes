@@ -16,6 +16,12 @@ folded(list(_), P, D, L, R) :- foldl(P, L, D, R).
 folded(list, P, D, L, R) :- folded(list(_), P, D, L, R).
 
 folded(dict(S, [Field]), Pred, Zero, Dict, Result) :-
+    (atom(Field) ; integer(Field)), !,
     is_dict(Dict, S),
     get_dict(Field, Dict, Elem),
     call(Pred, Zero, Elem, Result).
+
+folded(dict(S, [Field / Type]), Pred, Zero, Dict, Result) :-
+    is_dict(Dict, S),
+    get_dict(Field, Dict, Inner),
+    folded(Type, Pred, Zero, Inner, Result).

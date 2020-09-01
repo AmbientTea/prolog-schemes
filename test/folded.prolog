@@ -34,4 +34,13 @@ test('dict folded', [
 ]) :-
     folded(Type, Pred, 3, Dict, Result).
 
+test('dict nesting folded', [
+    setup((
+        Type = dict(s, [field / list]),
+        Dict = s{ field: [1,2,3,4,5] },
+        Pred = plus
+    )),
+    true(Result =@= 15)
+]) :-
+    folded(Type, Pred, 0, Dict, Result).
 :- end_tests('folded test').

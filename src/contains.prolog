@@ -23,16 +23,22 @@ contains_(functor(F, Arity, Fields), Func, Elem) :-
     member(Field, Fields),
     functor_contains(F, Arity, Field, Func, Elem).
 
-contains_(dict(S, [Field / Type]), Dict, Elem) :-
+contains_(dict(S, Fields), Dict, Elem) :-
+    is_list(Fields),
     is_dict(Dict, S),
-    get_dict(Field, Dict, Inner),
-    contains_(Type, Inner, Elem).
+    member(Field, Fields),
+    dict_contains(S, Field, Dict, Elem).
 
 contains_(F1 / F2, C, E) :-
     contains_(F1, C, IC),
     contains_(F2, IC, E).
 
 
+
+dict_contains(S, Field / Type, Dict, Elem) :-
+    is_dict(Dict, S),
+    get_dict(Field, Dict, Inner),
+    contains_(Type, Inner, Elem).
 
 functor_contains(F, Arity, Field, Func, Elem) :-
     integer(Field),

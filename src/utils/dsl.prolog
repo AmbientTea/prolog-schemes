@@ -28,6 +28,7 @@ translate(dict(S, [Field|Fields]), dict(S, TRFields)) :-
     maplist(translate_dict_field, [Field|Fields], TRFields).
 translate(dict(S, Field), dict(S, [TRField])) :-
     translate_dict_field(Field, TRField).
+translate(dict(S), dict(S, [])).
 translate({Key}, dict(_, [Key])).
 
 translate(functor(F, Arity, [Field|Fields]), functor(F, Arity, TRFields)) :-

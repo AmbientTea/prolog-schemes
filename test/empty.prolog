@@ -41,8 +41,9 @@ test('dict empty create', [
 test('dict empty check', [
     setup((
         Fields = [a / int(*), 1 / list, b / int(+)],
-        MatchingDict = s{a: 1, 1: [], b: 0}))
+        Expected = s{a: 1, 1: [], b: 0})),
+    true(Result =@= Expected)
 ]) :-
-    empty(dict(s, Fields), MatchingDict).
+    empty(dict(s, Fields), Result).
 
 :- end_tests('empty tests').

@@ -1,37 +1,39 @@
  :- module(empty, [empty/2]).
  
+ :- use_module(utils/dsl).
+
+ empty(T, V) :-
+    translate(T, TT),
+    empty_(TT, V).
  
-empty(int(+), 0).
-empty(int(*), 1).
-empty(int(max), -inf).
-empty(int(min), inf).
+empty_(int(+), 0).
+empty_(int(*), 1).
+empty_(int(max), -inf).
+empty_(int(min), inf).
 
-empty(list(_), []).
-empty(list, []).
+empty_(list(_), []).
 
-empty(id(T), E) :- empty(T, E).
+empty_(id(T), E) :- empty_(T, E).
 
-empty(','(T1,T2), (E1,E2)) :-
-    empty(T1, E1),
-    empty(T2, E2).
+empty_(','(T1,T2), (E1,E2)) :-
+    empty_(T1, E1),
+    empty_(T2, E2).
 
-empty(functor(F, Arity, Field / FT), E) :-
+empty_(functor(F, Arity, Field / FT), E) :-
     integer(Field),
-    empty(FT, FE),
+    empty_(FT, FE),
     nth1(Field, Args, FE),
     length(Args, Arity), % force finite list
     E =.. [F | Args].
 
-empty(functor(F, Arity, [Field | Fields]), E) :-
-    empty(functor(F, Arity, Field), E),
-    empty(functor(F, Arity, Fields), E).
+empty_(functor(F, Arity, [Field | Fields]), E) :-
+    empty_(functor(F, Arity, Field), E),
+    empty_(functor(F, Arity, Fields), E).
 
-empty(functor(F, Arity, []), E) :-
+empty_(functor(F, Arity, []), E) :-
     functor(E, F, Arity).
 
-empty(dict(S), S{}).
-
-empty(dict(S, KeyTypes), D) :-
+empty_(dict(S, KeyTypes), D) :-
     sort(KeyTypes, SortedKeyTypes),
-    maplist([K/T, K-E]>>empty(T,E), SortedKeyTypes, KeyTypePairs),
+    maplist([K/T, K-E]>>empty_(T,E), SortedKeyTypes, KeyTypePairs),
     dict_pairs(D, S, KeyTypePairs).

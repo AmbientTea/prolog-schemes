@@ -1,5 +1,5 @@
 :- module(combined, [combined/4]).
-
+% contains(functor(_50422,_50424,[1/id,2/list]),f(first,[second],third),_50470)
 :- use_module(library(clpfd)).
 
 combined(int(+), A, B, C) :- C #= A+B.

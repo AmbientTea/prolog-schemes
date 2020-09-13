@@ -6,13 +6,13 @@ test('id contains itself', [
     forall(member(Term, [1, term, [list]])),
     true(Result =@= Term)
 ]) :-
-    contains:contains(id(int), Term, Result).
+    contains(id(int), Term, Result).
 
 test('list contains its elements', [
     forall(member(List, [[], [1,2,3,4]])),
     all(Elem =@= List)
 ]) :-
-    contains:contains(list, List, Elem).
+    contains(list, List, Elem).
 
 test('nested list contains its elements\' elements', [
     setup((
@@ -21,7 +21,7 @@ test('nested list contains its elements\' elements', [
         )),
     set(Elem =@= List)
 ]) :-
-    contains:contains(list / list, LList, Elem).
+    contains(list / list, LList, Elem).
 
 
 test('single field functor', [
@@ -32,7 +32,7 @@ test('single field functor', [
     nondet,
     true(F - Arity - Elem =@= f - 3 - second)
 ]) :-
-    contains:contains(Type, Term, Elem).
+    contains(Type, Term, Elem).
 
 test('multi-field functor', [
     setup((
@@ -42,7 +42,7 @@ test('multi-field functor', [
     nondet,
     set(Elem =@= [first, second])
 ]) :-
-    contains:contains(Type, Term, Elem).
+    contains(Type, Term, Elem).
 
 test('nested multi-field functor', [
     setup((
@@ -51,8 +51,8 @@ test('nested multi-field functor', [
         )),
     nondet,
     set(Elem =@= [first, second])
-]) :-
-    contains:contains(Type, Term, Elem).
+]) :- 
+    contains(Type, Term, Elem).
 
 test('nested multi-field functor', [
     setup((
@@ -62,7 +62,7 @@ test('nested multi-field functor', [
     nondet,
     set(Elem =@= [second])
 ]) :-
-    contains:contains(Type, Term, Elem).
+    contains(Type, Term, Elem).
 
 test('elems mapped', [
     forall((

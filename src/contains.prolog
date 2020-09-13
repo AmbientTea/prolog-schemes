@@ -3,45 +3,45 @@
 :- use_module(library(clpfd)).
 
 :- use_module(utils/domains).
+:- use_module(utils/dsl).
 
-contains(id(_), X, X).
-contains(id, X, X).
+contains(T, A, B) :-
+    translate(T, TT),
+    contains_(TT, A, B).
 
-contains(list(_), List, Elem) :- member(Elem, List).
-contains(list, List, Elem) :- contains(list(_), List, Elem).
+contains_(id(_), X, X).
 
-contains(elem(Domain), List, Elem) :-
-    contains(elems([Domain]), List, Elem).
+contains_(list(_), List, Elem) :- member(Elem, List).
 
-contains(elems(Domains), List, Elem) :-
+contains_(elems(Domains), List, Elem) :-
     sum_domains(Domains, Domain), 
     I in Domain,
     nth1(I, List, Elem).
 
-contains(functor(F, Arity, Field), Func, Elem) :-
+contains_(functor(F, Arity, Field), Func, Elem) :-
     integer(Field),
     Func =.. [F | Args],
     length(Args, Arity),
     nth1(Field, Args, Elem, _).
 
-contains(functor(F, Arity, Field / FT), Func, Elem) :-
-    contains(functor(F, Arity, Field), Func, Inner),
-    contains(FT, Inner, Elem).
+contains_(functor(F, Arity, Field / FT), Func, Elem) :-
+    contains_(functor(F, Arity, Field), Func, Inner),
+    contains_(FT, Inner, Elem).
 
-contains(functor(F, Arity, [Field | Fields]), Func, Elem) :-
-    contains(functor(F, Arity, Field), Func, Elem)
-    ; contains(functor(F, Arity, Fields), Func, Elem).
+contains_(functor(F, Arity, [Field | Fields]), Func, Elem) :-
+    contains_(functor(F, Arity, Field), Func, Elem)
+    ; contains_(functor(F, Arity, Fields), Func, Elem).
 
-contains(dict(S, [Field / Type]), Dict, Elem) :-
+contains_(dict(S, [Field / Type]), Dict, Elem) :-
     is_dict(Dict, S),
     get_dict(Field, Dict, Inner),
-    contains(Type, Inner, Elem).
+    contains_(Type, Inner, Elem).
 
-contains(dict(S, [Field]), Dict, Elem) :-
+contains_(dict(S, [Field]), Dict, Elem) :-
     (atom(Field) ; integer(Field)),
     is_dict(Dict, S),
     get_dict(Field, Dict, Elem).
 
-contains(F1 / F2, C, E) :-
-    contains(F1, C, IC),
-    contains(F2, IC, E).
+contains_(F1 / F2, C, E) :-
+    contains_(F1, C, IC),
+    contains_(F2, IC, E).

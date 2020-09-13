@@ -1,5 +1,6 @@
 :- use_module('..'/src/mapped).
 :- use_module(utils).
+:- use_module(library(clpfd)).
 
 :- begin_tests('mapped tests').
 
@@ -35,5 +36,26 @@ test('functor mapped', [
     true(Result =@= Expected)
 ]) :- 
     mapped(Type, Pred, F, Result).
+
+test('elems mapped', [
+    nondet,
+    setup(Pred = plus(1)),
+    forall(( 
+        Type = elem(1..3),
+        List = [1,2,3,4,5,6],
+        ExpectedResult = [2,3,4,4,5,6]
+    ) ; (
+        Type = elems([1,3,5]),
+        List = [1,2,3,4,5,6],
+        ExpectedResult = [2,2,4,4,6,6]
+    ) ; (
+        Type = elems([1,4..sup]),
+        List = [1,2,3,4,5,6],
+        ExpectedResult = [2,2,3,5,6,7]
+    )
+    ),
+    true(Result =@= ExpectedResult)
+]) :-
+    mapped(Type, Pred, List, Result).
 
 :- end_tests('mapped tests').

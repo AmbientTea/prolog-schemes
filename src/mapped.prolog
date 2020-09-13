@@ -1,5 +1,8 @@
 :- module(mapped, [mapped/4]).
 
+:- use_module(library(clpfd)).
+
+:- discontiguous mapped/4.
 :- meta_predicate mapped(?, 2, ?, ?).
 mapped(F1 / F2, Pred, A, B) :- mapped(F1, mapped(F2, Pred), A, B).
 
@@ -7,6 +10,19 @@ mapped(list(_), Pred, A, B) :- maplist(Pred, A, B).
 mapped(list, Pred, A, B) :- mapped(list(_), Pred, A, B).
 
 mapped(id(_), Pred, A, B) :- call(Pred, A, B).
+
+mapped(elem(I), Pred, A, B) :-
+    mapped(elems([I]), Pred, A, B).
+
+mapped(elems([I | Is]), Pred, A, B) :-
+    foldl([L,R,LR]>>(LR = L \/ R), Is, I, Domain),
+    map_elems(Domain, 1, Pred, A, B).
+
+map_elems(Domain, Ind, Pred, [A | As], [B | Bs]) :-
+    (Ind in Domain -> call(Pred, A, B) ; A = B),
+    NInd is Ind + 1,
+    map_elems(Domain, NInd, Pred, As, Bs).
+map_elems(_Domain, _Ind, _Pred, [], []).
 
 mapped(functor(F, Arity, Field), Pred, A, B) :-
     integer(Field), 
@@ -39,3 +55,4 @@ mapped(dict(S, [Field / Type]), Pred, A, B) :-
     get_dict(Field, A, Elem),
     mapped(Type, Pred, Elem, MElem),
     put_dict([Field = MElem], A, B).
+

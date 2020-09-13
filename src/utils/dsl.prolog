@@ -27,8 +27,6 @@ translate(functor(F, Arity, [Field|Fields]), functor(F, Arity, TRFields)) :-
     maplist(translate_functor_field, [Field|Fields], TRFields).
 translate(functor(F, Arity, Field), functor(F, Arity, [TRField])) :-
     translate_functor_field(Field, TRField).
-translate(functor(F, Arity, Field), functor(F, Arity, [TRField])) :-
-    translate_functor_field(Field, TRField).
 translate(at(Field), functor(_, _, [TRField])) :-
     translate_functor_field(Field, TRField).
 

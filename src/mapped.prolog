@@ -2,6 +2,8 @@
 
 :- use_module(library(clpfd)).
 
+:- use_module(utils/domains).
+
 :- discontiguous mapped/4.
 :- meta_predicate mapped(?, 2, ?, ?).
 mapped(F1 / F2, Pred, A, B) :- mapped(F1, mapped(F2, Pred), A, B).

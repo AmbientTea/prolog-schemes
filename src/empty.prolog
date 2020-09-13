@@ -19,19 +19,16 @@ empty_(','(T1,T2), (E1,E2)) :-
     empty_(T1, E1),
     empty_(T2, E2).
 
-empty_(functor(F, Arity, Field / FT), E) :-
-    integer(Field),
-    empty_(FT, FE),
-    nth1(Field, Args, FE),
+empty_(functor(F, Arity, Fields), E) :-
+    is_list(Fields),
+    (integer(Arity) ; var(Arity)),
+    (atom(F) ; var(F)),
     length(Args, Arity), % force finite list
-    E =.. [F | Args].
-
-empty_(functor(F, Arity, [Field | Fields]), E) :-
-    empty_(functor(F, Arity, Field), E),
-    empty_(functor(F, Arity, Fields), E).
-
-empty_(functor(F, Arity, []), E) :-
-    functor(E, F, Arity).
+    E =.. [F | Args],
+    maplist({Args}/[Field / FieldType]>>(
+        empty_(FieldType, FE),
+        nth1(Field, Args, FE)
+    ), Fields).
 
 empty_(dict(S, KeyTypes), D) :-
     sort(KeyTypes, SortedKeyTypes),

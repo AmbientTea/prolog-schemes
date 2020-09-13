@@ -22,28 +22,30 @@ test('multi-field functor', [
 ]) :-
     empty(Type, Term).
 
-test('empty dict empty create', [
-    true(D =@= s{})
-]) :-
-    empty(dict(s), D).
+dict_cases(Type, EmptyValue) :- 
+    Type = dict(s),
+    EmptyValue = s{}
+    ;
+    Fields = [a / int(*), 1 / list, b / int(+)],
+    Type = dict(s, Fields),
+    EmptyValue = s{a: 1, 1: [], b: 0}
+    ;
+    Fields = [a / int(*), 1 / list, b / int(+)],
+    Type = dict(s, Fields),
+    EmptyValue = s{a: 1, 1: [], b: 0}.
 
-test('empty dict empty check', [] ) :-
-    empty(dict(s), s{}).
+test('dict empty generate', [
+    nondet,
+    forall(dict_cases(Type, Expected)),
+    true(Result =@= Expected)
+] ) :-
+    empty(Type, Result).
 
-test('dict empty create', [
-    setup((
-        Fields = [a / int(*), 1 / list, b / int(+)],
-        ExpectedDict = s{a: 1, 1: [], b: 0})),
-    true(D =@= ExpectedDict)
-]) :-
-    empty(dict(s, Fields), D).
 
 test('dict empty check', [
-    setup((
-        Fields = [a / int(*), 1 / list, b / int(+)],
-        Expected = s{a: 1, 1: [], b: 0})),
-    true(Result =@= Expected)
-]) :-
-    empty(dict(s, Fields), Result).
+    nondet,
+    forall(dict_cases(Type, EmptyValue))
+] ) :-
+    empty(Type, EmptyValue).
 
 :- end_tests('empty tests').

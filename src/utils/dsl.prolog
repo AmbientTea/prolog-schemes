@@ -12,9 +12,8 @@ translate(','(T1,T2), ','(TT1,TT2)) :-
     translate(T1, TT1),
     translate(T2, TT2).
 
-translate(A / B, AA / BB) :-
-    translate(A, AA),
-    translate(B, BB).
+translate(A / B, NPath) :-
+    rebalance_path(A/B, NPath).
 
 translate(list(T), list(T)).
 translate(list, list(_)).
@@ -49,3 +48,16 @@ translate_dict_field(Field / Type, Field / TRType) :-
     (integer(Field) ; atom(Field)),
     translate(Type, TRType).
 
+unfoldl(Pred, [H|T], V0, V) :-
+    call(Pred, H, V0, V1),
+    unfoldl(Pred, T, V1, V).
+unfoldl(_, [], V, V).
+
+slash_r(A, B, A/B).
+slash_l(A, B/A, B).
+
+rebalance_path(Path, NPath) :-
+    unfoldl(slash_l, Types, Path, X), !,
+    maplist(translate, [X | Types], [TX|TTypes]),
+    append([TTypes, [TX]], [TT|TTypes2]),
+    foldl(slash_r, TTypes2, TT, NPath).

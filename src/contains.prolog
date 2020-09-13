@@ -1,11 +1,22 @@
 :- module(contains, [contains/3]).
 
+:- use_module(library(clpfd)).
+
+:- use_module(utils/domains).
 
 contains(id(_), X, X).
 contains(id, X, X).
 
 contains(list(_), List, Elem) :- member(Elem, List).
 contains(list, List, Elem) :- contains(list(_), List, Elem).
+
+contains(elem(Domain), List, Elem) :-
+    contains(elems([Domain]), List, Elem).
+
+contains(elems(Domains), List, Elem) :-
+    sum_domains(Domains, Domain), 
+    I in Domain,
+    nth1(I, List, Elem).
 
 contains(functor(F, Arity, Field), Func, Elem) :-
     integer(Field),

@@ -64,4 +64,18 @@ test('nested multi-field functor', [
 ]) :-
     contains:contains(Type, Term, Elem).
 
+test('elems mapped', [
+    forall((
+        List = [1,2,3,4,5,6,7,8,9],
+        ( ( Domain = [1, 3..5], 
+           Expected = [1,3,4,5]
+        ) ; (
+           Domain = [1..sup],
+           Expected = List
+        ) )
+        )),
+    set(Elem =@= Expected)
+]) :-
+    contains(elems(Domain), List, Elem).
+
 :- end_tests('contains tests').

@@ -28,7 +28,7 @@ test('dict folded', [
     setup((
         Type = dict(s, [field]),
         Dict = s{ field: 1 },
-        Pred = [A, B, C]>>(C is A + B)
+        Pred = plus
     )),
     true(Result =@= 4)
 ]) :-

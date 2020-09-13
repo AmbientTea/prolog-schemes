@@ -1,6 +1,7 @@
 :- module(folded, [folded/5]).
 
 :- use_module(mapped).
+:- use_module(utils/dsl).
 
 :- meta_predicate folded(?, 3, ?, ?, ?).
 /**
@@ -8,20 +9,25 @@
  * 
  * Folds Foldable using Predicate, with initial accumulator value Zero.
  */
-folded(F1/F2, P, D, F, R) :-
-    mapped(F1, folded(F2, P, D), F, FR),
-    folded(F1, P, D, FR, R).
+folded(T, P, D, F, R) :-
+    translate(T, TT), !,
+    folded_(TT, P, D, F, R).
+    
+:- meta_predicate folded_(?, 3, ?, ?, ?).
+folded_(F1/F2, P, D, F, R) :-
+    mapped(F1, folded_(F2, P, D), F, FR),
+    folded_(F1, P, D, FR, R).
 
-folded(list(_), P, D, L, R) :- foldl(P, L, D, R).
-folded(list, P, D, L, R) :- folded(list(_), P, D, L, R).
+folded_(list(_), P, D, L, R) :- foldl(P, L, D, R).
 
-folded(dict(S, [Field]), Pred, Zero, Dict, Result) :-
-    (atom(Field) ; integer(Field)), !,
+folded_(id(_), P, Z, V, R) :- call(P, Z, V, R).
+
+folded_(dict(S, Fields), Pred, Zero, Dict, Result) :-
     is_dict(Dict, S),
-    get_dict(Field, Dict, Elem),
-    call(Pred, Zero, Elem, Result).
+    is_list(Fields),
+    foldl({Dict}/[Field / FieldType, Acc, NewAcc]>>(
+        get_dict(Field, Dict, Inner), 
+        folded_(FieldType, Pred, Acc, Inner, NewAcc)
+    ), Fields, Zero, Result).
 
-folded(dict(S, [Field / Type]), Pred, Zero, Dict, Result) :-
-    is_dict(Dict, S),
-    get_dict(Field, Dict, Inner),
-    folded(Type, Pred, Zero, Inner, Result).
+

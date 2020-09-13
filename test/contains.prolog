@@ -78,4 +78,17 @@ test('elems contains', [
 ]) :-
     contains(elems(Domain), List, Elem).
 
+test('dict contains', [
+    forall((
+        ( Type = dict(_, [a, b / list]),
+          Term = symbol{ a: 1, b: [2], c: 3 },
+          Expected = [1, 2])
+        ; (
+          Type = dict(symbol1, [a, b / list]),
+          Term = symbol2{ a: 1, b: [2], c: 3 },
+          Expected = [])
+    )),
+    set(Elem =@= Expected)
+]) :-
+    contains(Type, Term, Elem).
 :- end_tests('contains tests').

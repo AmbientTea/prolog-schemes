@@ -58,4 +58,25 @@ test('elems mapped', [
 ]) :-
     mapped(Type, Pred, List, Result).
 
+test('dict mapped', [
+    nondet,
+    setup(Pred = plus(1)),
+    forall((
+        Type = dict(s, [field]),
+        Dict = s{field: 1},
+        ExpectedResult = s{field: 2}
+    ) ; (
+        Type = dict(s, [field1, field2]),
+        Dict = s{field1: 1, field2: 2},
+        ExpectedResult = s{field1: 2, field2: 3}
+    ) ; (
+        Type = dict(s, [field / list]),
+        Dict = s{field: [1,2,3]},
+        ExpectedResult = s{field: [2,3,4]}
+    )
+    ),
+    true(Result =@= ExpectedResult)
+]) :-
+    mapped(Type, Pred, Dict, Result).
+
 :- end_tests('mapped tests').

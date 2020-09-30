@@ -13,8 +13,7 @@ contains_(id(_), X, X).
 
 contains_(list(_), List, Elem) :- member(Elem, List).
 
-contains_(elems(Domains), List, Elem) :-
-    sum_domains(Domains, Domain), 
+contains_(elems(Domain), List, Elem) :-
     I in Domain,
     nth1(I, List, Elem).
 

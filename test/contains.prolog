@@ -72,7 +72,10 @@ test('elems contains', [
         ) ; (
            Domain = [1..sup],
            Expected = List
-        ) )
+        ) ; (
+            Domain = [1],
+            Expected = [1]
+        ))
         )),
     set(Elem =@= Expected)
 ]) :-

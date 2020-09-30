@@ -2,6 +2,8 @@
     translate/2
 ]).
 
+:- use_module(domains).
+
 translate(int(G), int(G)).
 translate(int, int(_)).
 
@@ -19,9 +21,11 @@ translate(list(T), list(T)).
 translate(list, list(_)).
 translate([], list(_)).
 
-translate(elems(Domain), elems(Domain)).
-translate([I|Is], elems([I|Is])).
-translate(elem(Domain), elems([Domain])).
+translate(elems(Domains), elems(Domain)) :-
+    is_list(Domains) -> sum_domains(Domains, Domain) ; Domain = Domains.
+translate([I|Is], elems(Domain)) :-
+    sum_domains([I|Is], Domain).
+translate(elem(Domain), elems(Domain)).
 
 translate(dict(S, [Field|Fields]), dict(S, TRFields)) :-
     maplist(translate_dict_field, [Field|Fields], TRFields).

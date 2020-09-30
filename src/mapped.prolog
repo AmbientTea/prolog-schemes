@@ -18,8 +18,7 @@ mapped_(list(_), Pred, A, B) :- maplist(Pred, A, B).
 
 mapped_(id(_), Pred, A, B) :- call(Pred, A, B).
 
-mapped_(elems([I | Is]), Pred, A, B) :-
-    sum_domains([I|Is], Domain),
+mapped_(elems(Domain), Pred, A, B) :-
     map_elems(Domain, 1, Pred, A, B).
 
 map_elems(Domain, Ind, Pred, [A | As], [B | Bs]) :-

@@ -27,7 +27,7 @@ map_elems(Domain, Ind, Pred, [A | As], [B | Bs]) :-
     map_elems(Domain, NInd, Pred, As, Bs).
 map_elems(_Domain, _Ind, _Pred, [], []).
 
-map_functor(F, Arity, Field, Pred, A, B) :-
+map_functor(F, Arity, Pred, Field, A, B) :-
     integer(Field), 
     A =.. [F | Args],
     length(Args, Arity), 
@@ -36,13 +36,11 @@ map_functor(F, Arity, Field, Pred, A, B) :-
     nth1(Field, NewArgs, NewArg, Rest),
     B =.. [F | NewArgs].
 
-map_functor(F, Arity, Field / FT, Pred, A, B) :-
-    map_functor(F, Arity, Field, mapped(FT, Pred), A, B).
+map_functor(F, Arity, Pred, Field / FT, A, B) :-
+    map_functor(F, Arity, mapped(FT, Pred), Field, A, B).
 
-mapped_(functor(F, Arity, []), _, A, A) :- functor(A, F, Arity).
-mapped_(functor(F, Arity, [Field | Fields]), Pred, A, C) :-
-    map_functor(F, Arity, Field, Pred, A, B),
-    mapped_(functor(F, Arity, Fields), Pred, B, C).
+mapped_(functor(F, Arity, Fields), Pred, A, B) :-
+    foldl(map_functor(F, Arity, Pred), Fields, A, B).
 
 mapped_(dict(S, [Field | Fields]), Pred, A, B) :-
     is_dict(A, S),

@@ -37,7 +37,7 @@ map_functor(F, Arity, Pred, Field, A, B) :-
     B =.. [F | NewArgs].
 
 map_functor(F, Arity, Pred, Field / FT, A, B) :-
-    map_functor(F, Arity, mapped(FT, Pred), Field, A, B).
+    map_functor(F, Arity, mapped_(FT, Pred), Field, A, B).
 
 mapped_(functor(F, Arity, Fields), Pred, A, B) :-
     foldl(map_functor(F, Arity, Pred), Fields, A, B).

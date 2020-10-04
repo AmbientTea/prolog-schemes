@@ -23,6 +23,10 @@ translate(','(T1,T2), ','(TT1,TT2)) :-
 translate(A / B, NPath) :-
     rebalance_path(A/B, NPath).
 
+translate(A ; B, NA ; NB) :-
+    translate(A, NA),
+    translate(B, NB).
+
 translate(list(T), list(T)).
 translate(list, list(_)).
 translate([], list(_)).

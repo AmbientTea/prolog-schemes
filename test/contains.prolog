@@ -94,4 +94,15 @@ test('dict contains', [
     set(Elem =@= Expected)
 ]) :-
     contains(Type, Term, Elem).
+
+test('alternative contains', [
+    setup((
+        Type = list / (list ; {a}),
+        Term = [[1,2], s{a: 3}],
+        Expected = [1,2,3]
+    )),
+    set(Elem =@= Expected)
+]) :-
+    contains(Type, Term, Elem).
+
 :- end_tests('contains tests').

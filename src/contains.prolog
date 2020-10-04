@@ -32,7 +32,9 @@ contains_(F1 / F2, C, E) :-
     contains_(F1, C, IC),
     contains_(F2, IC, E).
 
-
+contains_(F1 ; F2, C, E) :-
+    contains_(F1, C, E)
+    ; contains_(F2, C, E).
 
 dict_contains(S, Field / Type, Dict, Elem) :-
     is_dict(Dict, S),

@@ -103,5 +103,16 @@ test('recursive tree mapped', [
 ]) :-
     mapped(Type, Pred, Tree, Result).
 
+test('alternative mapped', [
+    nondet,
+    setup((
+        Type = list / (dict(s, [a]) ; functor(s, 1, [1])),
+        Pred = plus(1),
+        Term = [s{a: 1}, s(2)],
+        ExpectedResult = [s{a: 2}, s(3)] 
+    )),
+    true(Result =@= ExpectedResult)
+]) :-
+    mapped(Type, Pred, Term, Result).
 
 :- end_tests('mapped tests').

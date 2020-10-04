@@ -18,6 +18,10 @@ folded_(F1/F2, P, D, F, R) :-
     mapped(F1, folded_(F2, P, D), F, FR),
     folded_(F1, P, D, FR, R).
 
+folded_(F1 ; F2, Pred, Zero, F, R) :-
+    folded_(F1, Pred, Zero, F, R)
+    ; folded_(F2, Pred, Zero, F, R).
+
 folded_(list(_), P, D, L, R) :- foldl(P, L, D, R).
 
 folded_(id(_), P, Z, V, R) :- call(P, Z, V, R).

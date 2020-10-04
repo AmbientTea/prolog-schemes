@@ -14,6 +14,10 @@ mapped(T, Pred, A, B) :-
 :- meta_predicate mapped_(?, 2, ?, ?).
 mapped_(F1 / F2, Pred, A, B) :- mapped_(F1, mapped_(F2, Pred), A, B).
 
+mapped_(F1 ; F2, Pred, A, B) :-
+    mapped_(F1, Pred, A, B)
+    ; mapped_(F2, Pred, A, B).
+
 mapped_(list(_), Pred, A, B) :- maplist(Pred, A, B).
 
 mapped_(id(_), Pred, A, B) :- call(Pred, A, B).
@@ -40,6 +44,7 @@ map_functor(F, Arity, Pred, Field / FT, A, B) :-
     map_functor(F, Arity, mapped_(FT, Pred), Field, A, B).
 
 mapped_(functor(F, Arity, Fields), Pred, A, B) :-
+    functor(A, F, Arity),
     foldl(map_functor(F, Arity, Pred), Fields, A, B).
 
 mapped_(dict(S, [Field | Fields]), Pred, A, B) :-

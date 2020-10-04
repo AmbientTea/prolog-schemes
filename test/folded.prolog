@@ -43,4 +43,17 @@ test('dict nesting folded', [
     true(Result =@= 15)
 ]) :-
     folded(Type, Pred, 0, Dict, Result).
+
+test('alternative folded', [
+    nondet,
+    setup((
+        Type = list / (list ; id) / id(int),
+        Pred = plus,
+        Term = [1, [2,3], 4],
+        ExpectedSum = 10
+    )),
+    true(Result =@= ExpectedSum)
+]) :-
+    folded(Type, Pred, 0, Term, Result).
+
 :- end_tests('folded test').

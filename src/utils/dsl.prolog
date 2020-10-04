@@ -59,9 +59,6 @@ unfoldl(Pred, [H|T], V0, V) :-
     unfoldl(Pred, T, V1, V).
 unfoldl(_, [], V, V).
 
-slash_r(A, B, A/B).
-slash_l(A, B/A, B).
-
 path_to_list(Path, List) :-
     phrase(path_to_list_(Path), List), !.
 

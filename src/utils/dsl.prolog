@@ -43,9 +43,11 @@ translate(at(Field), functor(_, _, [TRField])) :-
 
 
 translate_functor_field(Field, Field / id(_)) :- integer(Field).
-translate_functor_field(Field / Type, Field / TRType) :- 
+translate_functor_field(Path, Field / TRTypes) :- 
+    path_to_list(Path, [Field | Types]),
     integer(Field),
-    translate(Type, TRType).
+    maplist(translate, Types, NTypes),
+    list_to_path(NTypes, TRTypes).
 
 translate_dict_field(Field, Field / id(_)) :- integer(Field) ; atom(Field).
 translate_dict_field(Field / Type, Field / TRType) :-
@@ -61,12 +63,17 @@ slash_r(A, B, A/B).
 slash_l(A, B/A, B).
 
 path_to_list(Path, List) :-
-    unfoldl(slash_l, Types, Path, X), !,
-    append([Types, [X]], List).
+    phrase(path_to_list_(Path), List), !.
 
-list_to_path([TT|Types], Path) :-
-    foldl(slash_r, Types, TT, Path).
-    
+path_to_list_(A / B) --> path_to_list_(A), [B].
+path_to_list_(A) --> { A \= _ / _ }, [A].
+
+list_to_path(Types, Path) :-
+    phrase(list_to_path_(Path), Types), !.
+
+list_to_path_(A / B) --> [A], list_to_path_(B).
+list_to_path_(A) --> [A].
+
 rebalance_path(Path, NPath) :-
     path_to_list(Path, Types), 
     maplist(translate, Types, NTypes),

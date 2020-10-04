@@ -32,7 +32,8 @@ translate(dict(S, [Field|Fields]), dict(S, TRFields)) :-
 translate(dict(S, Field), dict(S, [TRField])) :-
     translate_dict_field(Field, TRField).
 translate(dict(S), dict(S, [])).
-translate({Key}, dict(_, [Key])).
+translate({Keys}, dict(_, KeysList)) :-
+    comma_list(Keys, KeysList).
 
 translate(functor(F, Arity, [Field|Fields]), functor(F, Arity, TRFields)) :-
     maplist(translate_functor_field, [Field|Fields], TRFields).
@@ -57,7 +58,7 @@ translate_dict_field(Field / Type, Field / TRType) :-
 path_to_list(Path, List) :-
     phrase(path_to_list_(Path), List), !.
 
-path_to_list_(A / B) --> path_to_list_(A), [B].
+path_to_list_(A / B) --> path_to_list_(A), path_to_list_(B).
 path_to_list_(A) --> { A \= _ / _ }, [A].
 
 list_to_path(Types, Path) :-

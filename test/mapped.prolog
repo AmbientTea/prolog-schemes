@@ -79,4 +79,29 @@ test('dict mapped', [
 ]) :-
     mapped(Type, Pred, Dict, Result).
 
+test('recursive tree mapped', [
+    nondet,
+    setup((
+        Type = rec(Rec, functor(node, 2, [1, 2/list/Rec])),
+        Pred = plus(10),
+        Tree = node(1, [
+            node(2, []),
+            node(3, [
+                node(4, []),
+                node(5, [])
+            ])
+        ]),
+        ExpectedResult = node(11, [
+            node(12, []),
+            node(13, [
+                node(14, []),
+                node(15, [])
+            ])
+        ])
+    )),
+    true(Result =@= ExpectedResult)
+]) :-
+    mapped(Type, Pred, Tree, Result).
+
+
 :- end_tests('mapped tests').

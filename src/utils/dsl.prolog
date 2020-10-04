@@ -4,6 +4,12 @@
 
 :- use_module(domains).
 
+translate(rec(R, T), IR) :-
+    R = inrec(IR),
+    translate(T, IR).
+
+translate(inrec(IR), IR).
+
 translate(int(G), int(G)).
 translate(int, int(_)).
 

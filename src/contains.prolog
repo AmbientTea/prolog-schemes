@@ -39,6 +39,11 @@ dict_contains(S, Field / Type, Dict, Elem) :-
     get_dict(Field, Dict, Inner),
     contains_(Type, Inner, Elem).
 
+dict_contains(S, Field, Dict, Elem) :-
+    ( integer(Field) ; atom(Field) ),
+    is_dict(Dict, S),
+    get_dict(Field, Dict, Elem).
+
 functor_contains(F, Arity, Field, Func, Elem) :-
     integer(Field),
     Func =.. [F | Args],

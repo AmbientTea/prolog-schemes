@@ -32,8 +32,9 @@ translate(dict(S, [Field|Fields]), dict(S, TRFields)) :-
 translate(dict(S, Field), dict(S, [TRField])) :-
     translate_dict_field(Field, TRField).
 translate(dict(S), dict(S, [])).
-translate({Keys}, dict(_, KeysList)) :-
-    comma_list(Keys, KeysList).
+translate({Keys}, dict(_, NKeys)) :-
+    comma_list(Keys, KeysList),
+    maplist(translate_dict_field, KeysList, NKeys).
 
 translate(functor(F, Arity, [Field|Fields]), functor(F, Arity, TRFields)) :-
     maplist(translate_functor_field, [Field|Fields], TRFields).
@@ -43,14 +44,14 @@ translate(at(Field), functor(_, _, [TRField])) :-
     translate_functor_field(Field, TRField).
 
 
-translate_functor_field(Field, Field / id(_)) :- integer(Field).
+translate_functor_field(Field, Field) :- integer(Field).
 translate_functor_field(Path, Field / TRTypes) :- 
     path_to_list(Path, [Field | Types]),
     integer(Field),
     maplist(translate, Types, NTypes),
     list_to_path(NTypes, TRTypes).
 
-translate_dict_field(Field, Field / id(_)) :- integer(Field) ; atom(Field).
+translate_dict_field(Field, Field) :- integer(Field) ; atom(Field).
 translate_dict_field(Field / Type, Field / TRType) :-
     (integer(Field) ; atom(Field)),
     translate(Type, TRType).

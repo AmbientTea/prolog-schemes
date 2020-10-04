@@ -109,6 +109,16 @@ A subset of list indexes can be specified using CLP(FD) domain syntax:
 V = 1 ; V = 3 ; V = 4. % etc
 ``` 
 
+## Recursion
+Recursive types are supported when explicitly marked using the `rec` keyword:
+```prolog
+:- TreeType = rec(Rec, functor(node, 2, [1, 2/list/Rec])),
+   Tree = node(1, [node(2,[]), node(3,[])]),
+   mapped(TreeType, plus(1), Tree, NewTree).
+NewTree = node(2, [node(3,[]), node(4,[])]).
+```
+Notice how the `Rec` variable is used at the recursion point.
+
 # More Examples
 
 ## Easy data aggregation

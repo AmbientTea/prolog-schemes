@@ -29,12 +29,12 @@ test('doubly nested list reduced', [
     forall(( 
         between(0, 10, Length), 
         randseq(Length, Length, List), 
-        sum_list(List, ExpectedProduct),
+        foldl([A,B,C]>>(C is A*B), List, 1, ExpectedProduct),
         append(List1, List2, List) 
     )),
     true(Product =@= ExpectedProduct)
 ]) :-
-    reduced(list / list / list(int(+)), [[List1], [List2]], Product).
+    reduced(list / list / list(int(*)), [[List1], [List2]], Product).
 
 test('nested list mixed reduced', [
     nondet,

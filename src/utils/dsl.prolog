@@ -60,8 +60,14 @@ unfoldl(_, [], V, V).
 slash_r(A, B, A/B).
 slash_l(A, B/A, B).
 
-rebalance_path(Path, NPath) :-
+path_to_list(Path, List) :-
     unfoldl(slash_l, Types, Path, X), !,
-    maplist(translate, [X | Types], [TX|TTypes]),
-    append([TTypes, [TX]], [TT|TTypes2]),
-    foldl(slash_r, TTypes2, TT, NPath).
+    append([Types, [X]], List).
+
+list_to_path([TT|Types], Path) :-
+    foldl(slash_r, Types, TT, Path).
+    
+rebalance_path(Path, NPath) :-
+    path_to_list(Path, Types), 
+    maplist(translate, Types, NTypes),
+    list_to_path(NTypes, NPath).

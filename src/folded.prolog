@@ -2,6 +2,7 @@
 
 :- use_module(mapped).
 :- use_module(utils/dsl).
+:- use_module(isa).
 
 :- meta_predicate folded(?, 3, ?, ?, ?).
 /**
@@ -15,16 +16,19 @@ folded(T, P, D, F, R) :-
     
 :- meta_predicate folded_(?, 3, ?, ?, ?).
 folded_(F1/F2, P, D, F, R) :-
-    mapped(F1, folded_(F2, P, D), F, FR),
+    mapped:mapped_(F1, folded:folded_(F2, P, D), F, FR),
     folded_(F1, P, D, FR, R).
 
 folded_(F1 ; F2, Pred, Zero, F, R) :-
+    isa(F1, F), !,
     folded_(F1, Pred, Zero, F, R)
     ; folded_(F2, Pred, Zero, F, R).
 
 folded_(list(_), P, D, L, R) :- foldl(P, L, D, R).
 
-folded_(id(_), P, Z, V, R) :- call(P, Z, V, R).
+folded_(id(T), P, Z, V, R) :- 
+    isa(T, V),
+    call(P, Z, V, R).
 
 folded_(dict(S, Fields), Pred, Zero, Dict, Result) :-
     is_dict(Dict, S),

@@ -5,6 +5,8 @@
 :- use_module(utils/domains).
 :- use_module(utils/dsl).
 
+:- use_module(isa).
+
 :- meta_predicate mapped(?, 2, ?, ?).
 mapped(T, Pred, A, B) :- 
     translate(T, TRT),
@@ -15,12 +17,15 @@ mapped(T, Pred, A, B) :-
 mapped_(F1 / F2, Pred, A, B) :- mapped_(F1, mapped_(F2, Pred), A, B).
 
 mapped_(F1 ; F2, Pred, A, B) :-
+    isa(F1, A), !,
     mapped_(F1, Pred, A, B)
     ; mapped_(F2, Pred, A, B).
 
 mapped_(list(_), Pred, A, B) :- maplist(Pred, A, B).
 
-mapped_(id(_), Pred, A, B) :- call(Pred, A, B).
+mapped_(id(T), Pred, A, B) :- 
+    isa(T, A),
+    call(Pred, A, B).
 
 mapped_(elems(Domain), Pred, A, B) :-
     map_elems(Domain, 1, Pred, A, B).

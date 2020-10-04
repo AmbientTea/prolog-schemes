@@ -218,5 +218,6 @@ This is enough to make the same type work for both operations.
 
 This project takes a lot of inspiration from Scala projects:
 [Cats](https://github.com/typelevel/cats),
+[Quicklens](https://github.com/softwaremill/quicklens),
 [Monocle](https://github.com/julien-truffaut/Monocle) and
 [Algebird](https://github.com/twitter/algebird).

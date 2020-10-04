@@ -1,18 +1,12 @@
-# Rationale
+Easy to use optics and type classes for SWI-Prolog.
 
-Type safety is not the only benefit a type system can bring to a language.
+This library implements commonly abstracted operations such as:
+`map`, `fold`, `member` etc. in a way that makes it easy to write
+generic code as well as manipulate complex structures without much
+boilerplate.
 
-Most functional languages leverage their type systems to create code that is more
-generic and reusable. In Haskell and Scala this is achieved using type classes.
-
-This library attempts to translate some of these languages' goodies to Prolog,
-while taking into consideration its own strengths and conventions.
-
-This document still talks about _type classes_ and _types_ in a loose way
-to refer to these constructs even in absence of a real type system.
-A more correct way would probably to talk about
-_operations_ (`mapped` as opposed to `Functor`)
-and _algebraic structures_ (`(Int, +) group` as opposed to `Int`).
+Dynamic polymorphism is achieved by explicitly passing type description
+to library predicates and a concise DSL is provided.
 
 # Instalation
 
@@ -22,15 +16,15 @@ clone this repo and copy the contents to your library path.
 # General structure
 
 Every predicate exported by the library expects its first argument to be
-a sufficiently grounded term describing the algebraic structure that it
-should use to interpret the rest of the arguments. Eg.:
+a sufficiently grounded term describing the type that it
+interpret the rest of the arguments as. Eg.:
 
 ```prolog
 :- combine(int(+), 1, 2, Sum).
 Sum = 3.
 ```
 
-will apply to its arguments the operation (`plus`) of the group of `integers with addition`.
+will add its arguments as integers.
 
 The predicates expect this type argument to be grounded only as much as needed:
 
@@ -63,7 +57,7 @@ in the type:
 
 ```prolog
 % multiply the elements of inner lists and sum the results.
-:- reduce:reduce(list(int(+)) / list(int(*)), [[1,2],[3]], Result).
+:- reduced:reduced(list(int(+)) / list(int(*)), [[1,2],[3]], Result).
 Result = 5 ;
 ```
 
@@ -90,6 +84,31 @@ Some operations can be derived for tuples based on the operations of their conte
 Empty = (0, 1, []).
 ```
 
+## Functors
+
+Functor arguments can be accessed by their place number and nested types are supported:
+```prolog 
+:- contains(functor(f, 2, [1, 2/ list]), f(1, [2]), V).
+V = 1 ;
+V = 2.
+```
+
+## Dicts
+
+SWI-prolog's dicts are supported in a similar fashion:
+```prolog 
+:- contains(dict(f, [a, b/ list]), f{ a: 1, b: [2] }, V).
+V = 1 ;
+V = 2.
+``` 
+
+## List indexing
+A subset of list indexes can be specified using CLP(FD) domain syntax:
+```prolog 
+:- contains(elems([1, 3..5, 7..sup]), [1,2,3,4,5,6,7,8,9], V).
+V = 1 ; V = 3 ; V = 4. % etc
+``` 
+
 # More Examples
 
 ## Easy data aggregation
@@ -109,10 +128,9 @@ sum_max_min(List, Sum, Max, Min) :-
     Min = 3.
 ```
 
-Notice that since our 'types' are purely declarative, we can interpret the same value in terms
-of different algebraic structures: groups with sum, max and min. This does not require any
-boxing of the values, like the Twitter's algebird
-[Min and Max](https://twitter.github.io/algebird/datatypes/min_and_max.html) do.
+Notice that since our 'types' are purely declarative, 
+we can interpret the same value in terms of different algebraic structures: 
+groups with sum, max and min.  This does not require any boxing of the values.
 
 ## Optics and type reuse
 
@@ -140,7 +158,7 @@ Now let's say we decide to give everyone a raise:
 EmployeesAfterRaise = [employee(keanu, reeves, 110), employee(dwayne, johnson, 100), employee(justin, bieber, 11)]
 ```
 
-It's easy to see there is not much difference between the types used in these two examples.
+There is not much difference between the types used in these two examples.
 The only difference is that in the second one we omit the field type as there is no
 `mapped` operation for ints. In cases like these we can use the `id` type to use a trivial one:
 
@@ -171,9 +189,20 @@ This is enough to make the same type work for both operations.
 | `tuple`    |   x   |     x     |         |        |         |
 | `functor`  |   x   |           |    x    |        |   `*`   |
 | `dict`     |   x   |           |   `**`  |        |         |
+| `elems`    |       |     x     |    x    |        |         |
 
 `*` Arity 1 only
 `**` Single-field only
+
+# DSL Shorthands
+
+| Type    | Shorthand   |
+| ------- | ----------- |
+| List    | [], list    |
+| Elems   | [+Domain]   |
+| Dict    | {+Fields}   |
+| Functor | at(+Fields) |
+| Nesting | T1 / T2     |
 
 # Mentions
 

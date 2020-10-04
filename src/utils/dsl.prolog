@@ -54,11 +54,6 @@ translate_dict_field(Field / Type, Field / TRType) :-
     (integer(Field) ; atom(Field)),
     translate(Type, TRType).
 
-unfoldl(Pred, [H|T], V0, V) :-
-    call(Pred, H, V0, V1),
-    unfoldl(Pred, T, V1, V).
-unfoldl(_, [], V, V).
-
 path_to_list(Path, List) :-
     phrase(path_to_list_(Path), List), !.
 

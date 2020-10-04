@@ -8,12 +8,12 @@
 :- use_module(mapped).
 
 
-reduced_fill_path(FT1 / FT2, FT1 / NFT2, T) :-
+reduced_fill_path(FT1 / FT2, T) :-
     segment_type(FT1, T),
     ( var(T) -> T = IT ; true ),
-    reduced_fill_path(FT2, NFT2, IT).
+    reduced_fill_path(FT2, IT).
 
-reduced_fill_path(FT, FT, T) :-
+reduced_fill_path(FT, T) :-
     FT \= _ / _,
     segment_type(FT, T).
 
@@ -22,8 +22,8 @@ segment_type(functor(_, _, _ / T), T).
 
 reduced(FT, F, R) :-
     translate(FT, FT2),
-    reduced_fill_path(FT2, FT3, _),
-    reduced_(FT3, F, R).
+    reduced_fill_path(FT2, _),
+    reduced_(FT2, F, R).
 
 reduced_(FT1 / FT2, F, R) :-
     mapped(FT1, reduced_(FT2), F, FR),

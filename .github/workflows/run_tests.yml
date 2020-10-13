@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SWI-Prolog
+        run: |
+            sudo apt-add-repository ppa:swi-prolog/stable
+            sudo apt-get install swi-prolog
+
+      - uses: actions/checkout@v2
+
+      - name: Run tests
+        run: |
+            /usr/bin/env prolog --version
+            ./run_tests.prolog

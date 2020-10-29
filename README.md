@@ -1,5 +1,12 @@
 Easy to use optics and type classes for SWI-Prolog.
 
+```prolog
+:- TreeType = rec(Rec, functor(node, 2, [1, 2/list/Rec])),
+   Tree = node(1, [node(2,[]), node(3,[])]),
+   mapped(TreeType, plus(1), Tree, NewTree).
+NewTree = node(2, [node(3,[]), node(4,[])]).
+```
+
 This library implements commonly abstracted operations such as:
 `map`, `fold`, `member` etc. in a way that makes it easy to write
 generic code as well as manipulate complex structures without much

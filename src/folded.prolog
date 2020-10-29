@@ -35,6 +35,9 @@ folded_(dict(S, Fields), Pred, Zero, Dict, Result) :-
     is_list(Fields),
     foldl(dict_folded_(Dict, Pred), Fields, Zero, Result).
 
+folded_(FT:_, Pred, Zero, Dict, Result) :-
+    folded_(FT, Pred, Zero, Dict, Result).
+
 dict_folded_(Dict, Pred, Field, Acc, NewAcc) :-
     ( integer(Field) ; atom(Field) ), !,
     get_dict(Field, Dict, Elem), 

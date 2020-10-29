@@ -16,6 +16,8 @@ combined_(list(_) / T, A, B, C) :- maplist(combined_(T), A, B, C).
 
 combined_(id(T), A, B, C) :- combined_(T, A, B, C).
 
+combined_(FT:_, A, B, C) :- combined_(FT, A, B, C).
+
 combined_(','(T1,T2), ','(A1,A2), ','(B1,B2), ','(C1,C2)) :-
     combined_(T1, A1, B1, C1),
     combined_(T2, A2, B2, C2).

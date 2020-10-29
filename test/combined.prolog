@@ -49,13 +49,13 @@ test('empty list test - left', [
     forall((repeat(10), random_list(List))),
     true(Result =@= List)
 ]) :-
-    combined(list(int(+)), List, [], Result).
+    combined(list:int(+), List, [], Result).
 
 test('empty list test - right', [
     forall((repeat(10), random_list(List))),
     true(Result =@= List)
 ]) :-
-    combined(list(int(+)), [], List, Result).
+    combined(list:int(+), [], List, Result).
 
 :- end_tests('list combined tests').
 
@@ -64,7 +64,7 @@ test('empty list test - right', [
 test('list of ints *', [ 
     true(Result =@= [2,6,12])
 ]) :-
-    combined(list / int(*), [1,2,3], [2,3,4], Result).
+    combined(list / id(int(*)), [1,2,3], [2,3,4], Result).
 
 :- end_tests('nested list test').
 

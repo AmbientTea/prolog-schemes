@@ -23,6 +23,8 @@ mapped_(F1 ; F2, Pred, A, B) :-
 
 mapped_(list(_), Pred, A, B) :- maplist(Pred, A, B).
 
+mapped_(FT:_, Pred, A, B) :- mapped_(FT, Pred, A, B).
+
 mapped_(id(T), Pred, A, B) :- 
     isa(T, A),
     call(Pred, A, B).

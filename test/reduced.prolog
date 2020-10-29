@@ -49,6 +49,6 @@ test('nested list mixed reduced', [
     )),
     true(Product =@= ExpectedProduct)
 ]) :-
-    reduced(list(int(*)) / list(int(+)), [List1, List2], Product).
+    reduced((list:int(*)) / (list:int(+)), [List1, List2], Product).
 
 :- end_tests('reduced tests').

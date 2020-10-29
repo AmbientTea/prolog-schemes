@@ -21,7 +21,7 @@ mapped_(F1 ; F2, Pred, A, B) :-
     mapped_(F1, Pred, A, B)
     ; mapped_(F2, Pred, A, B).
 
-mapped_(list(_), Pred, A, B) :- maplist(Pred, A, B).
+mapped_(list, Pred, A, B) :- maplist(Pred, A, B).
 
 mapped_(FT:_, Pred, A, B) :- mapped_(FT, Pred, A, B).
 

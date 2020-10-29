@@ -22,7 +22,7 @@ test('nested list folded', [
     )),
     true(ExpectedSum=@=Sum)
 ]) :-
-    folded(list / list(int(_)), plus, 0, [List1, List2], Sum).
+    folded(list / list : int(_), plus, 0, [List1, List2], Sum).
 
 test('dict folded', [ 
     setup((

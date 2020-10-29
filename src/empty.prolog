@@ -11,7 +11,7 @@ empty_(int(*), 1).
 empty_(int(max), -inf).
 empty_(int(min), inf).
 
-empty_(list(_), []).
+empty_(list, []).
 
 empty_(id(T), E) :- empty_(T, E).
 

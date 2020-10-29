@@ -32,8 +32,7 @@ translate(A ; B, NA ; NB) :-
     translate(A, NA),
     translate(B, NB).
 
-translate(list(T), list(T)).
-translate(list, list(_)).
+translate(list, list).
 translate([], list(_)).
 
 translate(elems(Domains), elems(Domain)) :-

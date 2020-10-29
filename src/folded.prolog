@@ -24,7 +24,7 @@ folded_(F1 ; F2, Pred, Zero, F, R) :-
     folded_(F1, Pred, Zero, F, R)
     ; folded_(F2, Pred, Zero, F, R).
 
-folded_(list(_), P, D, L, R) :- foldl(P, L, D, R).
+folded_(list, P, D, L, R) :- foldl(P, L, D, R).
 
 folded_(id(T), P, Z, V, R) :- 
     isa(T, V),

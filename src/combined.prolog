@@ -11,8 +11,8 @@ combined_(int(*), A, B, C) :- C #= A*B.
 combined_(int(min), A, B, C) :- when(( nonvar(A), nonvar(B) ), C is min(A,B)).
 combined_(int(max), A, B, C) :- when(( nonvar(A), nonvar(B) ), C is max(A,B)).
 
-combined_(list(_), A, B, C) :- append(A,B,C).
-combined_(list(_) / T, A, B, C) :- maplist(combined_(T), A, B, C).
+combined_(list, A, B, C) :- append(A,B,C).
+combined_(list / T, A, B, C) :- maplist(combined_(T), A, B, C).
 
 combined_(id(T), A, B, C) :- combined_(T, A, B, C).
 

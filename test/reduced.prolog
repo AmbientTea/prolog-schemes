@@ -15,7 +15,7 @@ test('flat list reduced', [
 test('nested list reduced', [
     nondet,
     forall(( 
-        between(0, 10, Length), 
+        between(0, 6, Length), 
         randseq(Length, Length, List), 
         sum_list(List, ExpectedProduct),
         append(List1, List2, List) 

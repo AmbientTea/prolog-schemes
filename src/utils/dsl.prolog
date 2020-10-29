@@ -33,7 +33,7 @@ translate(A ; B, NA ; NB) :-
     translate(B, NB).
 
 translate(list, list).
-translate([], list(_)).
+translate([], list).
 
 translate(elems(Domains), elems(Domain)) :-
     is_list(Domains) -> sum_domains(Domains, Domain) ; Domain = Domains.

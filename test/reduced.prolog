@@ -10,7 +10,7 @@ test('flat list reduced', [
     )),
     true(Sum =@= ExpectedSum)
 ]) :- 
-        reduced(list(int(+)), List, Sum).
+        reduced(list:int(+), List, Sum).
 
 test('nested list reduced', [
     nondet,
@@ -22,7 +22,7 @@ test('nested list reduced', [
     )),
     true(Product =@= ExpectedProduct)
 ]) :-
-    reduced(list / list(int(+)), [List1, List2], Product).
+    reduced(list / list : int(+), [List1, List2], Product).
 
 test('doubly nested list reduced', [
     nondet,
@@ -34,7 +34,7 @@ test('doubly nested list reduced', [
     )),
     true(Product =@= ExpectedProduct)
 ]) :-
-    reduced(list / list / list(int(*)), [[List1], [List2]], Product).
+    reduced(list / list / list : int(*), [[List1], [List2]], Product).
 
 test('nested list mixed reduced', [
     nondet,

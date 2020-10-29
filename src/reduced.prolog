@@ -20,6 +20,8 @@ reduced_fill_path(FT, T) :-
 segment_type(F, T) :- F =.. [_, T].
 segment_type(functor(_, _, _ / T), T).
 
+segment_type(_:T, T).
+
 reduced(FT, F, R) :-
     translate(FT, FT2),
     reduced_fill_path(FT2, _),
@@ -39,3 +41,7 @@ reduced_(functor(F, Arity, [Field / _]), Fun, V) :-
     functor(Fun, F, Arity),
     Fun =.. [F | Args],
     nth1(Field, Args, V).
+
+reduced_(FT:T, F, V) :-
+    empty:empty_(T, E),
+    folded:folded_(FT, combined:combined_(T), E, F, V).

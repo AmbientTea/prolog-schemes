@@ -10,6 +10,10 @@ translate(rec(R, T), IR) :-
 
 translate(inrec(IR), IR).
 
+translate(T1:T2, TT1:TT2) :-
+    translate(T1, TT1),
+    translate(T2, TT2).
+
 translate(int(G), int(G)).
 translate(int, int(_)).
 

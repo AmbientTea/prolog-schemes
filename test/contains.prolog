@@ -6,7 +6,7 @@ test('id contains itself', [
     forall(member(Term, [1, term, [list]])),
     true(Result =@= Term)
 ]) :-
-    contains(id(int), Term, Result).
+    contains(id:int, Term, Result).
 
 test('list contains its elements', [
     forall(member(List, [[], [1,2,3,4]])),

@@ -13,6 +13,8 @@ contains_(id(_), X, X).
 
 contains_(list(_), List, Elem) :- member(Elem, List).
 
+contains_(FT:_, F, Elem) :- contains_(FT, F, Elem).
+
 contains_(elems(Domain), List, Elem) :-
     I in Domain,
     nth1(I, List, Elem).

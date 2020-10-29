@@ -15,6 +15,8 @@ empty_(list(_), []).
 
 empty_(id(T), E) :- empty_(T, E).
 
+empty_(FT:_, E) :- empty_(FT, E).
+
 empty_(','(T1,T2), (E1,E2)) :-
     empty_(T1, E1),
     empty_(T2, E2).

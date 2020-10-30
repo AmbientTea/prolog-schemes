@@ -12,13 +12,13 @@ reduced(FT, F, R) :-
     reduced_(FT2, F, R).
 
 reduced_(FT1 / FT2, F, R) :-
-    mapped(FT1, reduced_(FT2), F, FR),
+    mapped:mapped_(FT1, reduced:reduced_(FT2), F, FR),
     reduced_(FT1, FR, R).
 
 reduced_(FT, F, R) :-
     FT =.. [_,T],
-    empty(T, E),
-    folded(FT, combined(T), E, F, R).
+    empty:empty_(T, E),
+    folded:folded_(FT, combined:combined_(T), E, F, R).
 
 reduced_(functor(F, Arity, [Field / _]), Fun, V) :- 
     functor(Fun, F, Arity),

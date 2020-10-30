@@ -27,22 +27,22 @@ test('list reduced', [
 test('nested list mixed reduced', [
     nondet,
     forall(( 
+        Type = (list:int(*)) / (list:int(+)),
         List1 = [1,2,3],
         List2 = [4,5,6],
         List = [List1,List2],
         sum_list(List1, Sum1),
         sum_list(List2, Sum2),
-        ExpectedProduct is Sum1 * Sum2
-        
+        ExpectedProduct is Sum1 * Sum2 
     )),
     true(Product =@= ExpectedProduct)
 ]) :-
-    reduced((list:int(*)) / (list:int(+)), List, Product).
+    reduced(Type, List, Product).
 
 test('functor reduced', [
     nondet,
     forall((
-        Type = functor(f, 3, [1/int(+)]),
+        Type = functor(f, 3, [1]) : int(+),
         Term = f(1,a,b),
         ExpectedResult = 1
 

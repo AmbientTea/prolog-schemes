@@ -39,4 +39,23 @@ test('nested list mixed reduced', [
 ]) :-
     reduced((list:int(*)) / (list:int(+)), List, Product).
 
+test('functor reduced', [
+    nondet,
+    forall((
+        Type = functor(f, 3, [1/int(+)]),
+        Term = f(1,a,b),
+        ExpectedResult = 1
+
+        ; Type = list / functor(f, 3, [1]) : int(+),
+        Term = [f(1,a,b), f(2,c,d)],
+        ExpectedResult = 3
+
+        ; Type = functor(f, 3, [1/list, 2]) : int(+),
+        Term = f([1,2,3],4,b),
+        ExpectedResult = 10
+    )),
+    true(Result =@= ExpectedResult)
+]) :-
+    reduced(Type, Term, Result).
+
 :- end_tests('reduced tests').

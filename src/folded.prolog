@@ -32,11 +32,14 @@ folded_(id(T), P, Z, V, R) :-
 
 folded_(dict(S, Fields), Pred, Zero, Dict, Result) :-
     is_dict(Dict, S),
-    is_list(Fields),
     foldl(dict_folded_(Dict, Pred), Fields, Zero, Result).
 
 folded_(FT:_, Pred, Zero, Dict, Result) :-
     folded_(FT, Pred, Zero, Dict, Result).
+
+folded_(functor(F, Arity, Fields), Pred, Zero, Fun, Result) :-
+    functor(Fun, F, Arity),
+    foldl(functor_folded_(Fun, Pred), Fields, Zero, Result).
 
 dict_folded_(Dict, Pred, Field, Acc, NewAcc) :-
     ( integer(Field) ; atom(Field) ), !,
@@ -47,3 +50,14 @@ dict_folded_(Dict, Pred, Field / FieldType, Acc, NewAcc) :-
     get_dict(Field, Dict, Inner), 
     folded_(FieldType, Pred, Acc, Inner, NewAcc).
 
+functor_folded_(Fun, Pred, Field, Acc, NewAcc) :-
+    integer(Field), !,
+    Fun =.. [_|Args],
+    nth1(Field, Args, Elem),
+    call(Pred, Acc, Elem, NewAcc).
+
+functor_folded_(Fun, Pred, Field / FieldType, Acc, NewAcc) :-
+    integer(Field), !,
+    Fun =.. [_|Args],
+    nth1(Field, Args, Elem),
+    folded_(FieldType, Pred, Acc, Elem, NewAcc).

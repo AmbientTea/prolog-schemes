@@ -24,30 +24,33 @@ clone this repo and copy the contents to your library path.
 
 Every predicate exported by the library expects its first argument to be
 a sufficiently grounded term describing the type that it
-interpret the rest of the arguments as. Eg.:
+interprets the rest of the arguments as. Eg.:
 
 ```prolog
 :- combine(int(+), 1, 2, Sum).
 Sum = 3.
 ```
 
-will add its arguments as integers.
-
+will add its arguments as integers.  
 The predicates expect this type argument to be grounded only as much as needed:
 
 ```prolog
-:- combine(list(_), [1], [2], List).
-List = [1, 2]
-```
-
-Some shorthands are also provided:
-
-```prolog
-:- combine(list, [1], [2], List).
-List = [1, 2]
+:- empty(int(Op), E).
+Op = +, E = 0
+; Op = *, E = 1
+...
 ```
 
 # Complex Types
+
+## Content Types
+
+Operator `:` is used to indicate the type of contents of a complex type:
+
+```prolog
+:- reduced(list:int(+), [1,2,3], Sum).
+Sum = 6.
+```
 
 ## Nesting
 
@@ -55,7 +58,7 @@ Very often data we work with is not just a simple list. That is why the library 
 the operator `/` for composing multiple instances of the same 'type class'. For example:
 
 ```prolog
-:- mapped(list / list(_), plus(1), [[1,2],[3]], List).
+:- mapped(list / list, plus(1), [[1,2],[3]], List).
 List = [[2, 3], [4]].
 ```
 
@@ -64,7 +67,8 @@ in the type:
 
 ```prolog
 % multiply the elements of inner lists and sum the results.
-:- reduced:reduced(list(int(+)) / list(int(*)), [[1,2],[3]], Result).
+% notice the necessary parentheses
+:- reduced((list:int(+)) / (list:int(*)), [[1,2],[3]], Result).
 Result = 5 ;
 ```
 
@@ -72,15 +76,15 @@ Shorthands are allowed in special cases:
 
 ```prolog
 % Sum all nested elements.
-:- reduce:reduce(list / list(int(+)), [[1,2],[3]], Result).
-Result = 6 ;
+:- reduced(list/list:int(+), [[1,2],[3]], Result).
+Result = 6.
 ```
 
 A nice feature that comes with this syntax is that where a Scala type `List[List[Int]]`
 can be ambiguously interpreted as a functor, in Prolog we can differentate between
 
-- `list / list(int(+))` for a functor `List[List[_]]`
-- `list(list(int(+)))` for a functor `List[_]`.
+- `list / list : int(+)` for a functor `List[List[_]]`
+- `list : list : int(+)` for a functor `List[_]`.
 
 ## Tuples
 
@@ -135,9 +139,9 @@ statistics for a given list of values:
 
 ```prolog
 sum_max_min(List, Sum, Max, Min) :-
-    Type = list((int(+), int(max), int(min)))
+    Type = list:(int(+), int(max), int(min)),
     mapped(Type, [X, (X,X,X)]>>true, List, InterList),
-    reduce:reduce(Type, InterList, (Sum, Max, Min)).
+    reduced(Type, InterList, (Sum, Max, Min)).
 
 :- List = [3,6,8,3,7], sum_max_min(List, Sum, Max, Min).
     Sum = 27,
@@ -147,12 +151,13 @@ sum_max_min(List, Sum, Max, Min) :-
 
 Notice that since our 'types' are purely declarative, 
 we can interpret the same value in terms of different algebraic structures: 
-groups with sum, max and min.  This does not require any boxing of the values.
+monoids with sum, max and min operation.
+This does not require any boxing of the values.
 
 ## Optics and type reuse
 
-Assume we have a database of employee contracts and we want to calculate
-the sum of the salaries.
+Assume we have a list of employee contracts 
+and we want to calculate the sum of the salaries.
 We can take advantage of the fact that a functor can be reduced to one of its field:
 
 ```prolog
@@ -200,9 +205,9 @@ This is enough to make the same type work for both operations.
 | ---------- | :---: | :-------: | :-----: | :----: | :-----: |
 | composable |  no   |    no     |   yes   |  yes   |   yes   |
 | ---------  | :---: | :-------: | :-----: |  :--:  | :----:  |
-| `id(_)`    |   x   |     x     |    x    |        |    x    |
+| `id`       |   x   |     x     |    x    |        |    x    |
 | `int(_)`   |   x   |     x     |         |        |         |
-| `list(_)`  |   x   |     x     |    x    |   x    |    x    |
+| `list`     |   x   |     x     |    x    |   x    |    x    |
 | `tuple`    |   x   |     x     |         |        |         |
 | `functor`  |   x   |           |    x    |        |   `*`   |
 | `dict`     |   x   |           |   `**`  |        |         |

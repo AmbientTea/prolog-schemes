@@ -14,6 +14,7 @@ empty_(int(min), inf).
 empty_(list, []).
 
 empty_(id/T, E) :- empty_(T, E).
+empty_(id:T, E) :- empty_(T, E).
 
 empty_(FT:_, E) :- empty_(FT, E).
 
@@ -22,7 +23,6 @@ empty_(','(T1,T2), (E1,E2)) :-
     empty_(T2, E2).
 
 empty_(functor(F, Arity, Fields), E) :-
-    is_list(Fields),
     (integer(Arity) ; var(Arity)),
     (atom(F) ; var(F)),
     length(Args, Arity), % force finite list

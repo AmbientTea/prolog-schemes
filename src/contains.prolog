@@ -20,12 +20,10 @@ contains_(elems(Domain), List, Elem) :-
     nth1(I, List, Elem).
 
 contains_(functor(F, Arity, Fields), Func, Elem) :-
-    is_list(Fields),
     member(Field, Fields),
     functor_contains(F, Arity, Field, Func, Elem).
 
 contains_(dict(S, Fields), Dict, Elem) :-
-    is_list(Fields),
     is_dict(Dict, S),
     member(Field, Fields),
     dict_contains(S, Field, Dict, Elem).

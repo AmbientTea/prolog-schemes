@@ -3,46 +3,40 @@
 :- use_module('..'/src/folded).
 
 
-test('plain list folded', [
+test('list folded', [
     forall((
-        between(1, 10, Length),
-        randseq(Length, Length, List),
-        sum_list(List, ExpectedSum)
-    )),
-    true(ExpectedSum=@=Sum)
-]) :-
-    folded(list, plus, 0, List, Sum).
+        Type = list,
+        List = [1,2,3,4,5,6],
+        sum_list(List, ExpectedResult)
 
-
-test('nested list folded', [
-    forall((
-        randseq(9, 10, List),
-        append(List1, List2, List),
-        sum_list(List, ExpectedSum)
+      ; Type = list / list : int(_),
+        List1 = [1,2,3],
+        List2 = [4,5,6],
+        List = [List1, List2],
+        append(List1, List2, List12),
+        sum_list(List12, ExpectedResult)
     )),
-    true(ExpectedSum=@=Sum)
+    true(ExpectedResult=@=Result)
 ]) :-
-    folded(list / list : int(_), plus, 0, [List1, List2], Sum).
+    folded(Type, plus, 0, List, Result).
 
 test('dict folded', [ 
-    setup((
+    forall((
         Type = dict(s, [field]),
         Dict = s{ field: 1 },
-        Pred = plus
-    )),
-    true(Result =@= 4)
-]) :-
-    folded(Type, Pred, 3, Dict, Result).
+        Pred = plus,
+        Zero = 3,
+        ExpectedResult = 4
 
-test('dict nesting folded', [
-    setup((
-        Type = dict(s, [field / list]),
+      ; Type = dict(s, [field / list]),
         Dict = s{ field: [1,2,3,4,5] },
-        Pred = plus
+        Pred = plus,
+        Zero = 0,
+        ExpectedResult = 15
     )),
-    true(Result =@= 15)
+    true(Result =@= ExpectedResult)
 ]) :-
-    folded(Type, Pred, 0, Dict, Result).
+    folded(Type, Pred, Zero, Dict, Result).
 
 test('alternative folded', [
     nondet,

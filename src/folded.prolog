@@ -26,8 +26,7 @@ folded_(F1 ; F2, Pred, Zero, F, R) :-
 
 folded_(list, P, D, L, R) :- foldl(P, L, D, R).
 
-folded_(id(T), P, Z, V, R) :- 
-    isa(T, V),
+folded_(id, P, Z, V, R) :- 
     call(P, Z, V, R).
 
 folded_(dict(S, Fields), Pred, Zero, Dict, Result) :-

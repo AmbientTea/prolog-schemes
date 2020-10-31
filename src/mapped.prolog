@@ -25,8 +25,7 @@ mapped_(list, Pred, A, B) :- maplist(Pred, A, B).
 
 mapped_(FT:_, Pred, A, B) :- mapped_(FT, Pred, A, B).
 
-mapped_(id(T), Pred, A, B) :- 
-    isa(T, A),
+mapped_(id, Pred, A, B) :- 
     call(Pred, A, B).
 
 mapped_(elems(Domain), Pred, A, B) :-

@@ -17,9 +17,7 @@ translate(T1:T2, TT1:TT2) :-
 translate(int(G), int(G)).
 translate(int, int(_)).
 
-translate(id, id(_)).
-translate(id(T), id(TT)) :-
-    translate(T, TT).
+translate(id, id).
 
 translate(','(T1,T2), ','(TT1,TT2)) :-
     translate(T1, TT1),

@@ -47,7 +47,7 @@ test('dict nesting folded', [
 test('alternative folded', [
     nondet,
     setup((
-        Type = list / (list ; id) / id(int),
+        Type = list / (list ; id) / id : int,
         Pred = plus,
         Term = [1, [2,3], 4],
         ExpectedSum = 10

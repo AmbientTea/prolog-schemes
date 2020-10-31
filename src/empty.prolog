@@ -13,7 +13,7 @@ empty_(int(min), inf).
 
 empty_(list, []).
 
-empty_(id(T), E) :- empty_(T, E).
+empty_(id/T, E) :- empty_(T, E).
 
 empty_(FT:_, E) :- empty_(FT, E).
 

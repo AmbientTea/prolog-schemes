@@ -9,7 +9,7 @@ contains(T, A, B) :-
     translate(T, TT),
     contains_(TT, A, B).
 
-contains_(id(_), X, X).
+contains_(id, X, X).
 
 contains_(list, List, Elem) :- member(Elem, List).
 

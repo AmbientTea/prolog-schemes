@@ -5,6 +5,7 @@ isa(T, V) :- isa_(T, V), !.
 isa_(T, _V) :- var(T), !.
 isa_(T1 ; T2, V) :- 
     isa_(T1, V) ; isa_(T2, V).
+isa_(id, _).
 isa_(id:T, V) :- isa_(T, V).
 isa_(int(_), V) :- integer(V).
 isa_(list, V) :- is_list(V).

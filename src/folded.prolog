@@ -20,7 +20,7 @@ folded_(F1/F2, P, D, F, R) :-
     folded_(F1, P, D, FR, R).
 
 folded_(F1 ; F2, Pred, Zero, F, R) :-
-    isa(F1, F), !,
+    isa:isa_(F1, F), !,
     folded_(F1, Pred, Zero, F, R)
     ; folded_(F2, Pred, Zero, F, R).
 

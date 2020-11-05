@@ -48,6 +48,9 @@ translate({Keys}, dict(_, NKeys)) :-
     comma_list(Keys, KeysList),
     maplist(translate_dict_field, KeysList, NKeys).
 
+translate(atom(A), functor(A, 0, [])) :-
+    atom(A).
+
 translate(functor(F, Arity, [Field|Fields]), functor(F, Arity, TRFields)) :-
     maplist(translate_functor_field, [Field|Fields], TRFields).
 translate(functor(F, Arity, Field), functor(F, Arity, [TRField])) :-

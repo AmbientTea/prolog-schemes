@@ -17,7 +17,7 @@ mapped(T, Pred, A, B) :-
 mapped_(F1 / F2, Pred, A, B) :- mapped_(F1, mapped_(F2, Pred), A, B).
 
 mapped_(F1 ; F2, Pred, A, B) :-
-    isa(F1, A), !,
+    isa:isa_(F1, A), !,
     mapped_(F1, Pred, A, B)
     ; mapped_(F2, Pred, A, B).
 

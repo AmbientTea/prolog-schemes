@@ -1,19 +1,18 @@
-Easy to use optics and type classes for SWI-Prolog.
+Easy to use optics and data structure manipulation for SWI-Prolog.
 
 ```prolog
-:- TreeType = rec(Rec, functor(node, 2, [1, 2/list/Rec])),
-   Tree = node(1, [node(2,[]), node(3,[])]),
-   mapped(TreeType, plus(1), Tree, NewTree).
-NewTree = node(2, [node(3,[]), node(4,[])]).
+?- BinaryTreeType = rec(Rec, (atom(nil) ; functor(node, 3, [1/Rec, 2, 3/Rec]) )),
+   Tree = node(node(nil, 1, nil), 2, node(nil, 3, nil)),
+   mapped(BinaryTreeType, plus(1), Tree, NewTree),
+   reduced(BinaryTreeType:int(+), NewTree, Sum).
+NewTree = node(node(nil, 2, nil), 3, node(nil, 4, nil)),
+Sum = 9.
 ```
 
-This library implements commonly abstracted operations such as:
-`map`, `fold`, `member` etc. in a way that makes it easy to write
-generic code as well as manipulate complex structures without much
-boilerplate.
-
-Dynamic polymorphism is achieved by explicitly passing type description
-to library predicates and a concise DSL is provided.
+This library provides a polymorphic implementation of commonly abstracted
+operations such as `map`, `fold`, `member` etc.  along with a rich DSL
+for specifying complex data structures they can apply to,
+in a similar fashion to optics and recursion schemes of functional languages.
 
 # Instalation
 
@@ -27,7 +26,7 @@ a sufficiently grounded term describing the type that it
 interprets the rest of the arguments as. Eg.:
 
 ```prolog
-:- combine(int(+), 1, 2, Sum).
+?- combine(int(+), 1, 2, Sum).
 Sum = 3.
 ```
 
@@ -35,7 +34,7 @@ will add its arguments as integers.
 The predicates expect this type argument to be grounded only as much as needed:
 
 ```prolog
-:- empty(int(Op), E).
+?- empty(int(Op), E).
 Op = +, E = 0
 ; Op = *, E = 1
 ...
@@ -48,7 +47,7 @@ Op = +, E = 0
 Operator `:` is used to indicate the type of contents of a complex type:
 
 ```prolog
-:- reduced(list:int(+), [1,2,3], Sum).
+?- reduced(list:int(+), [1,2,3], Sum).
 Sum = 6.
 ```
 
@@ -58,7 +57,7 @@ Very often data we work with is not just a simple list. That is why the library 
 the operator `/` for composing multiple instances of the same 'type class'. For example:
 
 ```prolog
-:- mapped(list / list, plus(1), [[1,2],[3]], List).
+?- mapped(list / list, plus(1), [[1,2],[3]], List).
 List = [[2, 3], [4]].
 ```
 
@@ -68,7 +67,7 @@ in the type:
 ```prolog
 % multiply the elements of inner lists and sum the results.
 % notice the necessary parentheses
-:- reduced((list:int(+)) / (list:int(*)), [[1,2],[3]], Result).
+?- reduced((list:int(+)) / (list:int(*)), [[1,2],[3]], Result).
 Result = 5 ;
 ```
 
@@ -76,7 +75,7 @@ Shorthands are allowed in special cases:
 
 ```prolog
 % Sum all nested elements.
-:- reduced(list/list:int(+), [[1,2],[3]], Result).
+?- reduced(list/list:int(+), [[1,2],[3]], Result).
 Result = 6.
 ```
 
@@ -91,7 +90,7 @@ can be ambiguously interpreted as a functor, in Prolog we can differentate betwe
 Some operations can be derived for tuples based on the operations of their contents:
 
 ```prolog
-:- empty((int(+), int(*), list), Empty).
+?- empty((int(+), int(*), list), Empty).
 Empty = (0, 1, []).
 ```
 
@@ -99,7 +98,7 @@ Empty = (0, 1, []).
 
 Functor arguments can be accessed by their place number and nested types are supported:
 ```prolog 
-:- contains(functor(f, 2, [1, 2/ list]), f(1, [2]), V).
+?- contains(functor(f, 2, [1, 2/ list]), f(1, [2]), V).
 V = 1 ;
 V = 2.
 ```
@@ -108,7 +107,7 @@ V = 2.
 
 SWI-prolog's dicts are supported in a similar fashion:
 ```prolog 
-:- contains(dict(f, [a, b/ list]), f{ a: 1, b: [2] }, V).
+?- contains(dict(f, [a, b/ list]), f{ a: 1, b: [2] }, V).
 V = 1 ;
 V = 2.
 ``` 
@@ -116,14 +115,14 @@ V = 2.
 ## List indexing
 A subset of list indexes can be specified using CLP(FD) domain syntax:
 ```prolog 
-:- contains(elems([1, 3..5, 7..sup]), [1,2,3,4,5,6,7,8,9], V).
+?- contains(elems([1, 3..5, 7..sup]), [1,2,3,4,5,6,7,8,9], V).
 V = 1 ; V = 3 ; V = 4. % etc
 ``` 
 
 ## Recursion
 Recursive types are supported when explicitly marked using the `rec` keyword:
 ```prolog
-:- TreeType = rec(Rec, functor(node, 2, [1, 2/list/Rec])),
+?- TreeType = rec(Rec, functor(node, 2, [1, 2/list/Rec])),
    Tree = node(1, [node(2,[]), node(3,[])]),
    mapped(TreeType, plus(1), Tree, NewTree).
 NewTree = node(2, [node(3,[]), node(4,[])]).
@@ -138,12 +137,12 @@ We can make use of various `combine` operations for integers to compute simple
 statistics for a given list of values:
 
 ```prolog
-sum_max_min(List, Sum, Max, Min) :-
+sum_max_min(List, Sum, Max, Min) ?-
     Type = list:(int(+), int(max), int(min)),
     mapped(Type, [X, (X,X,X)]>>true, List, InterList),
     reduced(Type, InterList, (Sum, Max, Min)).
 
-:- List = [3,6,8,3,7], sum_max_min(List, Sum, Max, Min).
+?- List = [3,6,8,3,7], sum_max_min(List, Sum, Max, Min).
     Sum = 27,
     Max = 8,
     Min = 3.
@@ -161,7 +160,7 @@ and we want to calculate the sum of the salaries.
 We can take advantage of the fact that a functor can be reduced to one of its field:
 
 ```prolog
-:- Employees = [
+?- Employees = [
         employee(keanu, reeves, 100),
         employee(dwayne, johnson, 90),
         employee(justin, bieber, 1)
@@ -175,7 +174,7 @@ Sum = 191.
 Now let's say we decide to give everyone a raise:
 
 ```prolog
-:- EmployeeSalaries = list / functor(employee, 3, 3),
+?- EmployeeSalaries = list / functor(employee, 3, 3),
    mapped(EmployeeSalaries, plus(10), Employees, EmployeesAfterRaise).
 EmployeesAfterRaise = [employee(keanu, reeves, 110), employee(dwayne, johnson, 100), employee(justin, bieber, 11)]
 ```
@@ -185,7 +184,7 @@ The only difference is that in the second one we omit the field type as there is
 `mapped` operation for ints. In cases like these we can use the `id` type to use a trivial one:
 
 ```prolog
-:- Employees = [
+?- Employees = [
         employee(keanu, reeves, 100),
         employee(dwayne, johnson, 90),
         employee(justin, bieber, 1)
@@ -202,9 +201,9 @@ This is enough to make the same type work for both operations.
 # Instance table
 
 |            | empty | combined  | mapped  | folded | reduced |
-| ---------- | :---: | :-------: | :-----: | :----: | :-----: |
+| ---------- | ?---: | ?-------: | ?-----: | ?----: | ?-----: |
 | composable |  no   |    no     |   yes   |  yes   |   yes   |
-| ---------  | :---: | :-------: | :-----: |  :--:  | :----:  |
+| ---------  | ?---: | ?-------: | ?-----: |  ?--:  | ?----:  |
 | `id`       |   x   |     x     |    x    |        |    x    |
 | `int(_)`   |   x   |     x     |         |        |         |
 | `list`     |   x   |     x     |    x    |   x    |    x    |

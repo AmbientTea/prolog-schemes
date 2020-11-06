@@ -40,7 +40,7 @@ Op = +, E = 0
 ...
 ```
 
-# Complex Types
+# Composing Types
 
 ## Content Types
 
@@ -53,30 +53,24 @@ Sum = 6.
 
 ## Nesting
 
-Very often data we work with is not just a simple list. That is why the library provides
-the operator `/` for composing multiple instances of the same 'type class'. For example:
-
+Very often data we work with is not just a simple list. 
+Operator `/` composes two types together, for example: 
 ```prolog
 ?- mapped(list / list, plus(1), [[1,2],[3]], List).
 List = [[2, 3], [4]].
+
+% Sum all nested elements.
+?- reduced(list/list:int(+), [[1,2],[3]], Result).
+Result = 6.
 ```
 
 Sometimes an operation can be nested in a couple different ways and this can be reflected
-in the type:
-
+in the type: 
 ```prolog
 % multiply the elements of inner lists and sum the results.
 % notice the necessary parentheses
 ?- reduced((list:int(+)) / (list:int(*)), [[1,2],[3]], Result).
 Result = 5 ;
-```
-
-Shorthands are allowed in special cases:
-
-```prolog
-% Sum all nested elements.
-?- reduced(list/list:int(+), [[1,2],[3]], Result).
-Result = 6.
 ```
 
 A nice feature that comes with this syntax is that where a Scala type `List[List[Int]]`
@@ -85,10 +79,35 @@ can be ambiguously interpreted as a functor, in Prolog we can differentate betwe
 - `list / list : int(+)` for a functor `List[List[_]]`
 - `list : list : int(+)` for a functor `List[_]`.
 
+## Alternative
+
+Multiple possible patterns a value can take can be listed using `;` operator:
+```prolog
+?- reduced(list / (list ; id) : int(+), [1, [2,3], 4], Sum).
+Sum = 10.
+```
+*Warning*: This feature can cause excessive backtracking, incorrect results or
+domain errors, due to lack of reliable type information. A general rule is that
+types that can be checked at runtime like lists and functors should go first.
+
+# Supported Types
+
+## Integers
+
+Various ways to interpret integers are supported using the `int(Op)` type.
+For now supported operations are `+`, `*`, `max` and `min`.
+
+## Atoms
+
+Atom literals can be specified as `atom(Atom)` and are treated as an empty functor.
+```prolog
+?- reduced(list / (atom(fizz) ; atom(buzz) ; id) : int(+), [1,2,fizz, 4, buzz]).
+Sum = 7.
+```
+
 ## Tuples
 
-Some operations can be derived for tuples based on the operations of their contents:
-
+Tuple types are represented as tuples of types.
 ```prolog
 ?- empty((int(+), int(*), list), Empty).
 Empty = (0, 1, []).
@@ -96,16 +115,19 @@ Empty = (0, 1, []).
 
 ## Functors
 
-Functor arguments can be accessed by their place number and nested types are supported:
+Functor types are denoted by `functor(Symbol, Arity, Arguments)`. 
+Functor `Arguments` are specified by their number (starting 1) and nested types
+are supported using `/` operator:
 ```prolog 
-?- contains(functor(f, 2, [1, 2/ list]), f(1, [2]), V).
+?- contains(functor(f, 2, [1, 2/list]), f(1, [2]), V).
 V = 1 ;
 V = 2.
 ```
+Both `Symbol` and `Arity` can be unbound.
 
 ## Dicts
 
-SWI-prolog's dicts are supported in a similar fashion:
+SWI-Prolog's dicts are supported in a similar fashion:
 ```prolog 
 ?- contains(dict(f, [a, b/ list]), f{ a: 1, b: [2] }, V).
 V = 1 ;
@@ -120,7 +142,7 @@ V = 1 ; V = 3 ; V = 4. % etc
 ``` 
 
 ## Recursion
-Recursive types are supported when explicitly marked using the `rec` keyword:
+Recursion is explicitly indicated using `rec(Rec, Type)`:
 ```prolog
 ?- TreeType = rec(Rec, functor(node, 2, [1, 2/list/Rec])),
    Tree = node(1, [node(2,[]), node(3,[])]),
@@ -198,22 +220,20 @@ EmployeesAfterRaise = [employee(keanu, reeves, 110), employee(dwayne, johnson, 1
 
 This is enough to make the same type work for both operations.
 
-# Instance table
+# Types and operations table
 
-|            | empty | combined  | mapped  | folded | reduced |
-| ---------- | ?---: | ?-------: | ?-----: | ?----: | ?-----: |
-| composable |  no   |    no     |   yes   |  yes   |   yes   |
-| ---------  | ?---: | ?-------: | ?-----: |  ?--:  | ?----:  |
-| `id`       |   x   |     x     |    x    |        |    x    |
-| `int(_)`   |   x   |     x     |         |        |         |
-| `list`     |   x   |     x     |    x    |   x    |    x    |
-| `tuple`    |   x   |     x     |         |        |         |
-| `functor`  |   x   |           |    x    |        |   `*`   |
-| `dict`     |   x   |           |   `**`  |        |         |
-| `elems`    |       |     x     |    x    |        |         |
-
-`*` Arity 1 only
-`**` Single-field only
+|            | empty | combined  | mapped  | folded | reduced | contains |
+| ---------- | :---: | :-------: | :-----: | :----: | :-----: | :------: |
+| composable |  no   |    no     |   yes   |  yes   |   yes   |    yes   |
+| ---------  | ?---: | ?-------: | ?-----: |  ?--:  | ?----:  | :------: |
+| `id`       |   x   |     x     |    x    |        |    x    |    x     |
+| `int(_)`   |   x   |     x     |         |        |         |          |
+| `atom(_)`  |   x   |           |    x    |        |         |    x     |
+| `list`     |   x   |     x     |    x    |   x    |    x    |    x     |
+| `tuple`    |   x   |     x     |         |        |         |          |
+| `functor`  |   x   |           |    x    |   x    |    x    |    x     |
+| `dict`     |   x   |           |    x    |   x    |    x    |    x     |
+| `elems`    |       |     x     |    x    |        |         |    x     |
 
 # DSL Shorthands
 

@@ -225,7 +225,7 @@ This is enough to make the same type work for both operations.
 |            | empty | combined  | mapped  | folded | reduced | contains |
 | ---------- | :---: | :-------: | :-----: | :----: | :-----: | :------: |
 | composable |  no   |    no     |   yes   |  yes   |   yes   |    yes   |
-| ---------  | ?---: | ?-------: | ?-----: |  ?--:  | ?----:  | :------: |
+| ---------  | :---: | :-------: | :-----: |  :--:  | :----:  | :------: |
 | `id`       |   x   |     x     |    x    |        |    x    |    x     |
 | `int(_)`   |   x   |     x     |         |        |         |          |
 | `atom(_)`  |   x   |           |    x    |        |         |    x     |
@@ -244,6 +244,7 @@ This is enough to make the same type work for both operations.
 | Dict    | {+Fields}   |
 | Functor | at(+Fields) |
 | Nesting | T1 / T2     |
+| Content | T1 : T2     |
 
 # Mentions
 

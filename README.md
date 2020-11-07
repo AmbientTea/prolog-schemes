@@ -173,52 +173,22 @@ sum_max_min(List, Sum, Max, Min) ?-
 Notice that since our 'types' are purely declarative, 
 we can interpret the same value in terms of different algebraic structures: 
 monoids with sum, max and min operation.
-This does not require any boxing of the values.
 
-## Optics and type reuse
-
-Assume we have a list of employee contracts 
-and we want to calculate the sum of the salaries.
-We can take advantage of the fact that a functor can be reduced to one of its field:
-
+## Optics 
+Assume we have a list of employee salary data and want to give everone a 10% raise.  
+We can use a more concise syntax to point exactly at employee salaries:
 ```prolog
 ?- Employees = [
-        employee(keanu, reeves, 100),
-        employee(dwayne, johnson, 90),
-        employee(justin, bieber, 1)
+        employee{name: keanu, surname: reeves, salary: 100},
+        employee{name: dwayne, surname: johnson, salary: 90},
+        employee{name: justin, surname: bieber, salary: 1}
     ],
     % list of functors of arity 3, symbol `employee`, with an int in 3rd position
-    EmployeeSalaries = list / functor(employee, 3, 3/int(+)),
-    reduce(EmployeeSalaries, Employees, Sum).
-Sum = 191.
+    EmployeeSalaries = list / {salary},
+    GiveRaise = [Salary, NewSalary]>>(NewSalary is 1.1 * Salary),
+    mapped(EmployeeSalaries, GiveRaise, Employees, NewSalaries).
+NewSalaries = [employee{name: keanu, surname: reeves, sarary: 110.0}...].
 ```
-
-Now let's say we decide to give everyone a raise:
-
-```prolog
-?- EmployeeSalaries = list / functor(employee, 3, 3),
-   mapped(EmployeeSalaries, plus(10), Employees, EmployeesAfterRaise).
-EmployeesAfterRaise = [employee(keanu, reeves, 110), employee(dwayne, johnson, 100), employee(justin, bieber, 11)]
-```
-
-There is not much difference between the types used in these two examples.
-The only difference is that in the second one we omit the field type as there is no
-`mapped` operation for ints. In cases like these we can use the `id` type to use a trivial one:
-
-```prolog
-?- Employees = [
-        employee(keanu, reeves, 100),
-        employee(dwayne, johnson, 90),
-        employee(justin, bieber, 1)
-    ],
-    EmployeeSalaries = list / functor(employee, 3, 3/id(int(+))),
-    reduce(EmployeeSalaries, Employees, Sum),
-    mapped(EmployeeSalaries, plus(10), Employees, EmployeesAfterRaise).
-Sum = 191,
-EmployeesAfterRaise = [employee(keanu, reeves, 110), employee(dwayne, johnson, 100), employee(justin, bieber, 11)]
-```
-
-This is enough to make the same type work for both operations.
 
 # Types and operations table
 
@@ -235,16 +205,20 @@ This is enough to make the same type work for both operations.
 | `dict`     |   x   |           |    x    |   x    |    x    |    x     |
 | `elems`    |       |     x     |    x    |        |         |    x     |
 
-# DSL Shorthands
+# DSL Overview
 
-| Type    | Shorthand   |
-| ------- | ----------- |
-| List    | [], list    |
-| Elems   | [+Domain]   |
-| Dict    | {+Fields}   |
-| Functor | at(+Fields) |
-| Nesting | T1 / T2     |
-| Content | T1 : T2     |
+| Type    | Long syntax                       | Shorthand   |
+| ------- | --------------------------------- | ----------- |
+| Id      | id                                |             |
+| Int     | int(-Operation)                   |             |
+| Tuple   | (+Types)                          |             |
+| Atom    | atom(+Atom)                       |             |
+| List    | list                              | []          |
+| Elems   | elems(+Domain), elems([+Domains]) | [+Domains]  |
+| Dict    | dict(Symbol, [+Fields])           | {+Fields}   |
+| Functor | functor(-Symbol, -Arity, +Fields) | at(+Field)  |
+| Nesting | T1 / T2                           |             |
+| Content | T1 : T2                           |             |
 
 # Mentions
 

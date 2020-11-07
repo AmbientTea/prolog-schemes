@@ -1,6 +1,7 @@
 #!/usr/bin/env swipl
 :- foreach(
-        directory_member(test, File, [matches('*.prolog')]), 
+        ( member(Dir, [test, 'test/examples']),
+          directory_member(Dir, File, [matches('*.prolog')])),
         ( format("loading ~w~n", [File]), [File]) ), 
     run_tests,
     halt.

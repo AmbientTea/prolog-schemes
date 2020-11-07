@@ -3,21 +3,32 @@
 :- use_module(library(clpfd)).
 
 :- use_module(utils/domains).
+:- use_module(utils/dsl).
 
-:- discontiguous mapped/4.
+:- use_module(isa).
+
 :- meta_predicate mapped(?, 2, ?, ?).
-mapped(F1 / F2, Pred, A, B) :- mapped(F1, mapped(F2, Pred), A, B).
+mapped(T, Pred, A, B) :- 
+    translate(T, TRT),
+    mapped_(TRT, Pred, A, B).
 
-mapped(list(_), Pred, A, B) :- maplist(Pred, A, B).
-mapped(list, Pred, A, B) :- mapped(list(_), Pred, A, B).
+:- discontiguous mapped_/4.
+:- meta_predicate mapped_(?, 2, ?, ?).
+mapped_(F1 / F2, Pred, A, B) :- mapped_(F1, mapped_(F2, Pred), A, B).
 
-mapped(id(_), Pred, A, B) :- call(Pred, A, B).
+mapped_(F1 ; F2, Pred, A, B) :-
+    isa:isa_(F1, A), !,
+    mapped_(F1, Pred, A, B)
+    ; mapped_(F2, Pred, A, B).
 
-mapped(elem(I), Pred, A, B) :-
-    mapped(elems([I]), Pred, A, B).
+mapped_(list, Pred, A, B) :- maplist(Pred, A, B).
 
-mapped(elems([I | Is]), Pred, A, B) :-
-    foldl([L,R,LR]>>(LR = L \/ R), Is, I, Domain),
+mapped_(FT:_, Pred, A, B) :- mapped_(FT, Pred, A, B).
+
+mapped_(id, Pred, A, B) :- 
+    call(Pred, A, B).
+
+mapped_(elems(Domain), Pred, A, B) :-
     map_elems(Domain, 1, Pred, A, B).
 
 map_elems(Domain, Ind, Pred, [A | As], [B | Bs]) :-
@@ -26,7 +37,7 @@ map_elems(Domain, Ind, Pred, [A | As], [B | Bs]) :-
     map_elems(Domain, NInd, Pred, As, Bs).
 map_elems(_Domain, _Ind, _Pred, [], []).
 
-mapped(functor(F, Arity, Field), Pred, A, B) :-
+map_functor(F, Arity, Pred, Field, A, B) :-
     integer(Field), 
     A =.. [F | Args],
     length(Args, Arity), 
@@ -35,26 +46,23 @@ mapped(functor(F, Arity, Field), Pred, A, B) :-
     nth1(Field, NewArgs, NewArg, Rest),
     B =.. [F | NewArgs].
 
-mapped(functor(F, Arity, Field / FT), Pred, A, B) :-
-    mapped(functor(F, Arity, Field), mapped(FT, Pred), A, B).
+map_functor(F, Arity, Pred, Field / FT, A, B) :-
+    map_functor(F, Arity, mapped_(FT, Pred), Field, A, B).
 
-mapped(functor(F, Arity, []), _, A, A) :- functor(A, F, Arity).
-mapped(functor(F, Arity, [Field | Fields]), Pred, A, C) :-
-    mapped(functor(F, Arity, Field), Pred, A, B),
-    mapped(functor(F, Arity, Fields), Pred, B, C).
+mapped_(functor(F, Arity, Fields), Pred, A, B) :-
+    functor(A, F, Arity),
+    foldl(map_functor(F, Arity, Pred), Fields, A, B).
 
-mapped(functor(Fields), Pred, A, B) :- mapped(functor(_, _, Fields), Pred, A, B).
-
-mapped(dict(S, [Field]), Pred, A, B) :-
-    (atom(Field) ; integer(Field)),
+mapped_(dict(S, [Field | Fields]), Pred, A, B) :-
     is_dict(A, S),
-    get_dict(Field, A, Elem),
-    call(Pred, Elem, MElem),
-    put_dict([Field = MElem], A, B).
+    maplist(mapped_dict_field(Pred, A), [Field|Fields], NewFields),
+    put_dict(NewFields, A, B).
 
-mapped(dict(S, [Field / Type]), Pred, A, B) :-
-    is_dict(A, S),
-    get_dict(Field, A, Elem),
-    mapped(Type, Pred, Elem, MElem),
-    put_dict([Field = MElem], A, B).
+mapped_dict_field(Pred, Dict, Field / Type, Field = MElem) :-
+    get_dict(Field, Dict, Elem),
+    mapped_(Type, Pred, Elem, MElem).
 
+mapped_dict_field(Pred, Dict, Field, Field = MElem) :-
+    atom(Field),
+    get_dict(Field, Dict, Elem),
+    call(Pred, Elem, MElem).

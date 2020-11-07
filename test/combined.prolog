@@ -1,74 +1,42 @@
 :- use_module('..'/src/combined).
 :- use_module(utils).
 
-:- begin_tests('int combined tests').
+:- begin_tests('combined tests').
 
-
-test('int + test', [
-    forall(( repeat(10), random_ints(X, Y), Sum is X + Y )),
-    true(Result =@= Sum)
-]) :-
-    combined(int(+), X, Y, Result).
-
-
-test('int * test', [
-    forall(( repeat(10), random_ints(X, Y), Product is X * Y )),
-    true(Result =@= Product)
-]) :-
-    combined(int(*), X, Y, Result).
-
-
-test('int max test', [
-    forall(( repeat(10), random_ints(X, Y), Max is max(X, Y) )),
-    true(Result =@= Max)
-]) :-
-    combined(int(max), X, Y, Result).
-
-test('int min test', [
-    forall(( repeat(10), random_ints(X, Y), Min is min(X, Y) )),
-    true(Result =@= Min)
-]) :-
-    combined(int(min), X, Y, Result).
-
-:- end_tests('int combined tests').
-
-:- begin_tests('list combined tests').
-
-test('random lists test', [
+test('int combined tests', [
     forall((
         repeat(10),
-        random_list(List1),
-        random_list(List2),
-        append(List1, List2, List) 
+        random_ints(X, Y),
+        ( Type = int(+), ExpectedResult is X + Y 
+        ; Type = int(*), ExpectedResult is X * Y 
+        ; Type = int(min), ExpectedResult is min(X,Y)
+        ; Type = int(max), ExpectedResult is max(X,Y) )
     )),
-    true(Result =@= List)
+    true(Result =@= ExpectedResult)
 ]) :-
-    combined(list, List1, List2, Result).
+    combined(Type, X, Y, Result).
 
-test('empty list test - left', [
-    forall((repeat(10), random_list(List))),
-    true(Result =@= List)
+test('lists combined tests', [
+    forall((
+        List1 = [1,2,3],
+        List2 = [4,5,6],
+        append(List1, List2, List12),
+        ( Type = list,
+          A = List1, B = List2,
+          ExpectedResult = List12
+
+        ; Type = list : int(+),
+          A = List1, B = List2,
+          ExpectedResult = List12
+
+        ; Type = list / id / int(+),
+          A = List1, B = List2,
+          ExpectedResult = [5, 7, 9]
+        )
+    )),
+    true(Result =@= ExpectedResult)
 ]) :-
-    combined(list(int(+)), List, [], Result).
-
-test('empty list test - right', [
-    forall((repeat(10), random_list(List))),
-    true(Result =@= List)
-]) :-
-    combined(list(int(+)), [], List, Result).
-
-:- end_tests('list combined tests').
-
-:- begin_tests('nested list test').
-
-test('list of ints *', [ 
-    true(Result =@= [2,6,12])
-]) :-
-    combined(list / int(*), [1,2,3], [2,3,4], Result).
-
-:- end_tests('nested list test').
-
-:- begin_tests('tuple combined tests').
+    combined(Type, A, B, Result).
 
 test('pair test', [ 
     forall((
@@ -96,4 +64,4 @@ test('triple test', [
 ]) :-
     combined((int(+), int(*), int(max)), (X1, Y1, Z1), (X2, Y2, Z2), Result).
 
-:- end_tests('tuple combined tests').
+:- end_tests('combined tests').

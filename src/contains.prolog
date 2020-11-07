@@ -3,45 +3,56 @@
 :- use_module(library(clpfd)).
 
 :- use_module(utils/domains).
+:- use_module(utils/dsl).
 
-contains(id(_), X, X).
-contains(id, X, X).
+contains(T, A, B) :-
+    translate(T, TT),
+    contains_(TT, A, B).
 
-contains(list(_), List, Elem) :- member(Elem, List).
-contains(list, List, Elem) :- contains(list(_), List, Elem).
+contains_(id, X, X).
 
-contains(elem(Domain), List, Elem) :-
-    contains(elems([Domain]), List, Elem).
+contains_(list, List, Elem) :- member(Elem, List).
 
-contains(elems(Domains), List, Elem) :-
-    sum_domains(Domains, Domain), 
+contains_(FT:_, F, Elem) :- contains_(FT, F, Elem).
+
+contains_(elems(Domain), List, Elem) :-
     I in Domain,
     nth1(I, List, Elem).
 
-contains(functor(F, Arity, Field), Func, Elem) :-
+contains_(functor(F, Arity, Fields), Func, Elem) :-
+    member(Field, Fields),
+    functor_contains(F, Arity, Field, Func, Elem).
+
+contains_(dict(S, Fields), Dict, Elem) :-
+    is_dict(Dict, S),
+    member(Field, Fields),
+    dict_contains(S, Field, Dict, Elem).
+
+contains_(F1 / F2, C, E) :-
+    contains_(F1, C, IC),
+    contains_(F2, IC, E).
+
+contains_(F1 ; F2, C, E) :-
+    contains_(F1, C, E)
+    ; contains_(F2, C, E).
+
+dict_contains(S, Field / Type, Dict, Elem) :-
+    is_dict(Dict, S),
+    get_dict(Field, Dict, Inner),
+    contains_(Type, Inner, Elem).
+
+dict_contains(S, Field, Dict, Elem) :-
+    ( integer(Field) ; atom(Field) ),
+    is_dict(Dict, S),
+    get_dict(Field, Dict, Elem).
+
+functor_contains(F, Arity, Field, Func, Elem) :-
     integer(Field),
     Func =.. [F | Args],
     length(Args, Arity),
     nth1(Field, Args, Elem, _).
 
-contains(functor(F, Arity, Field / FT), Func, Elem) :-
-    contains(functor(F, Arity, Field), Func, Inner),
-    contains(FT, Inner, Elem).
+functor_contains(F, Arity, Field / FT, Func, Elem) :-
+    functor_contains(F, Arity, Field, Func, Inner),
+    contains_(FT, Inner, Elem).
 
-contains(functor(F, Arity, [Field | Fields]), Func, Elem) :-
-    contains(functor(F, Arity, Field), Func, Elem)
-    ; contains(functor(F, Arity, Fields), Func, Elem).
-
-contains(dict(S, [Field / Type]), Dict, Elem) :-
-    is_dict(Dict, S),
-    get_dict(Field, Dict, Inner),
-    contains(Type, Inner, Elem).
-
-contains(dict(S, [Field]), Dict, Elem) :-
-    (atom(Field) ; integer(Field)),
-    is_dict(Dict, S),
-    get_dict(Field, Dict, Elem).
-
-contains(F1 / F2, C, E) :-
-    contains(F1, C, IC),
-    contains(F2, IC, E).

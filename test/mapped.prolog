@@ -58,4 +58,61 @@ test('elems mapped', [
 ]) :-
     mapped(Type, Pred, List, Result).
 
+test('dict mapped', [
+    nondet,
+    setup(Pred = plus(1)),
+    forall((
+        Type = dict(s, [field]),
+        Dict = s{field: 1},
+        ExpectedResult = s{field: 2}
+    ) ; (
+        Type = dict(s, [field1, field2]),
+        Dict = s{field1: 1, field2: 2},
+        ExpectedResult = s{field1: 2, field2: 3}
+    ) ; (
+        Type = dict(s, [field / list]),
+        Dict = s{field: [1,2,3]},
+        ExpectedResult = s{field: [2,3,4]}
+    )
+    ),
+    true(Result =@= ExpectedResult)
+]) :-
+    mapped(Type, Pred, Dict, Result).
+
+test('recursive tree mapped', [
+    nondet,
+    setup((
+        Type = rec(Rec, functor(node, 2, [1, 2/list/Rec])),
+        Pred = plus(10),
+        Tree = node(1, [
+            node(2, []),
+            node(3, [
+                node(4, []),
+                node(5, [])
+            ])
+        ]),
+        ExpectedResult = node(11, [
+            node(12, []),
+            node(13, [
+                node(14, []),
+                node(15, [])
+            ])
+        ])
+    )),
+    true(Result =@= ExpectedResult)
+]) :-
+    mapped(Type, Pred, Tree, Result).
+
+test('alternative mapped', [
+    nondet,
+    setup((
+        Type = list / (dict(s, [a]) ; functor(s, 1, [1])),
+        Pred = plus(1),
+        Term = [s{a: 1}, s(2)],
+        ExpectedResult = [s{a: 2}, s(3)] 
+    )),
+    true(Result =@= ExpectedResult)
+]) :-
+    mapped(Type, Pred, Term, Result).
+
 :- end_tests('mapped tests').

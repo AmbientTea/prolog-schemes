@@ -1,37 +1,10 @@
-#+title: Easy to use optics and data structure manipulation for SWI-Prolog.
-
-* Init :noexport:
-#+begin_src prolog :session *prolog* :results none
-:- set_prolog_flag(verbose, normal).
-:- use_module(src/combined).
-:- use_module(src/contains).
-:- use_module(src/empty).
-:- use_module(src/folded).
-:- use_module(src/isa).
-:- use_module(src/mapped).
-:- use_module(src/reduced).
-#+end_src
-
-
-* Prolog Schemes
-
-#+begin_src prolog :session *prolog* :results none
-:- BinaryTreeType = rec(Rec, (atom(nil) ; functor(node, 3, [1/Rec, 2, 3/Rec]) )),
-   Tree = node(node(nil, 1, nil), 2, node(nil, 3, nil)),
-   mapped(BinaryTreeType, plus(1), Tree, NewTree),
-   reduced(BinaryTreeType:int(+), NewTree, Sum),
-   assertion(Sum = 9).
-#+end_src
+#+title: Prolog Schemes
 
 This library provides a polymorphic implementation of commonly abstracted
 operations such as =map=, =fold=, =member= etc.  along with a rich DSL
 for specifying complex data structures they can be applied to.
 It is inspired by type-classes, optics and recursion schemes found in functional languages,
 but thanks to Prolog's flexibility and lack of type constraints can blend them into one.
-
-* Instalation
-The library is not yet packaged and the only way to install it is to
-clone this repo and copy the contents to your library path.
 
 * General structure
 
@@ -125,6 +98,13 @@ Tuple schemes are represented as tuples of schemes.
    assertion(Empty = (0, 1, [])).
 #+end_src
 
+** Id
+
+Sometimes we want to treat a value as a container of itself. We can achieve this using the =id= scheme:
+#+begin_src prolog :session *prolog* :results none
+:- mapped(id, plus(1), 5, V),
+   assertion(V = 6).
+#+end_src
 
 ** Functors
 
@@ -157,11 +137,12 @@ A subset of list indexes can be specified using CLP(FD) domain syntax:
 ** Recursion
 Recursion is explicitly indicated using =rec(Rec, Type)= scheme:
 #+begin_src prolog :session *prolog* :results none
-:- TreeType = rec(Rec, functor(node, 2, [1, 2/list/Rec])),
-   Tree = node(1, [node(2,[]), node(3,[])]),
-   mapped(TreeType, plus(1), Tree, NewTree),
+% recursively defined comma-list
+:- CommaListType = rec(Rec, functor(',', 2, [1, 2/(Rec ; id)])),
+   List = (1, 2, 3),
+   mapped(CommaListType, plus(1), List, NewList),
    
-   assertion(NewTree = node(2, [node(3,[]), node(4,[])])).
+   assertion(NewList = (2, 3, 4)).
 #+end_src
 Notice how the =Rec= variable is used at the recursion point.
 
@@ -202,6 +183,15 @@ We can use a more concise syntax to point exactly at employee salaries:
    mapped(EmployeeSalaries, GiveRaise, Employees, NewSalaries),
    assertion(NewSalaries = [employee{name: keanu, surname: reeves, salary: 110} | _] ).
 #+end_src
+** 
+
+#+begin_src prolog :session *prolog* :results none
+:- BinaryTreeType = rec(Rec, (atom(nil) ; functor(node, 3, [1/Rec, 2, 3/Rec]) )),
+   Tree = node(node(nil, 1, nil), 2, node(nil, 3, nil)),
+   mapped(BinaryTreeType, plus(1), Tree, NewTree),
+   reduced(BinaryTreeType:int(+), NewTree, Sum),
+   assertion(Sum = 9).
+#+end_src
 
 * Types and operations table
 
@@ -236,6 +226,10 @@ We can use a more concise syntax to point exactly at employee salaries:
 * Known bugs and issues
 - =empty= elements for =int(max)= and =int(min)= are useless (not acepted by =is= and CLPFD)
 - sum-type schemes (alternatives with =;=) cannot be handled safely in general
+
+* Instalation
+The library is not yet packaged and the only way to install it is to
+clone this repo onto your library path.
 
 * Mentions
 
